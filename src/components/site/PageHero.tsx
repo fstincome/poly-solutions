@@ -5,7 +5,7 @@ export function PageHero({
 }: {
   eyebrow: string;
   title: string;
-  intro?: string;
+  intro?: string | undefined;
 }) {
   return (
     <section className="border-b border-border bg-primary text-primary-foreground">
