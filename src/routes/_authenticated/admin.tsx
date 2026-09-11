@@ -1,0 +1,125 @@
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Loader2, LogOut, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+
+import { supabase } from "@/integrations/supabase/client";
+import { claimFirstAdmin } from "@/lib/admin.functions";
+import logo from "@/assets/logo.png.asset.json";
+
+export const Route = createFileRoute("/_authenticated/admin")({
+  component: AdminLayout,
+});
+
+const LINKS = [
+  { to: "/admin", label: "Tableau de bord", exact: true },
+  { to: "/admin/parametres", label: "Textes du site" },
+  { to: "/admin/contenus", label: "Services, équipe, partenaires" },
+  { to: "/admin/actualites", label: "Actualités" },
+  { to: "/admin/messages", label: "Messages reçus" },
+] as const;
+
+function AdminLayout() {
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const claim = useServerFn(claimFirstAdmin);
+
+  const { data: session } = useQuery({
+    queryKey: ["admin-session"],
+    queryFn: async () => (await supabase.auth.getUser()).data.user,
+  });
+
+  const { data: isAdmin, isLoading } = useQuery({
+    queryKey: ["is-admin", session?.id],
+    enabled: !!session?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("has_role", { _user_id: session!.id, _role: "admin" });
+      if (error) throw error;
+      return Boolean(data);
+    },
+  });
+
+  const claimMutation = useMutation({
+    mutationFn: () => claim({ data: undefined as never }),
+    onSuccess: () => {
+      toast.success("Vous êtes maintenant administrateur du site.");
+      qc.invalidateQueries({ queryKey: ["is-admin"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  async function signOut() {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
+  return (
+    <div className="min-h-screen bg-secondary font-sans">
+      <header className="border-b border-border bg-background">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
+          <Link to="/" className="flex items-center gap-3">
+            <img src={logo.url} alt="POLY-SOLUTIONS" width={36} height={36} className="size-9" />
+            <span className="font-display text-sm font-bold text-primary">Administration du site</span>
+          </Link>
+          <div className="flex items-center gap-3 text-sm">
+            <span className="hidden text-muted-foreground sm:inline">{session?.email}</span>
+            <button
+              type="button"
+              onClick={signOut}
+              className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 font-medium"
+            >
+              <LogOut className="size-4" /> Déconnexion
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[240px_1fr]">
+        <nav className="space-y-1">
+          {LINKS.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              activeOptions={{ exact: "exact" in l ? l.exact : false }}
+              activeProps={{ className: "bg-primary text-primary-foreground" }}
+              className="block rounded-lg px-4 py-2.5 text-sm font-medium text-foreground/80 hover:bg-background"
+            >
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="rounded-3xl border border-border bg-background p-8">
+          {isLoading ? (
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" /> Vérification de vos droits…
+            </p>
+          ) : isAdmin ? (
+            <Outlet />
+          ) : (
+            <div className="max-w-lg">
+              <ShieldCheck className="size-9 text-accent" />
+              <h1 className="mt-4 font-display text-xl font-bold">Accès administrateur requis</h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Votre compte n'a pas encore les droits d'administration. Si vous êtes la première personne de
+                POLY-SOLUTIONS à configurer le site, activez vos droits ci-dessous. Sinon, demandez à un administrateur
+                existant de vous ajouter.
+              </p>
+              <button
+                type="button"
+                onClick={() => claimMutation.mutate()}
+                disabled={claimMutation.isPending}
+                className="mt-5 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground disabled:opacity-60"
+              >
+                {claimMutation.isPending ? "Activation…" : "Devenir administrateur"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
