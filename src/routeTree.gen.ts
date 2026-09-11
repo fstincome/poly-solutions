@@ -21,6 +21,9 @@ import { Route as SitePartenairesRouteImport } from './routes/_site/partenaires'
 import { Route as SiteRealisationsRouteImport } from './routes/_site/realisations'
 import { Route as SiteServicesRouteImport } from './routes/_site/services'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminActualitesRouteImport } from './routes/_authenticated/admin.actualites'
+import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
+import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminParametresRouteImport } from './routes/_authenticated/admin.parametres'
 import { Route as SiteActualitesIndexRouteImport } from './routes/_site/actualites.index'
 import { Route as SiteActualitesSlugRouteImport } from './routes/_site/actualites.$slug'
@@ -83,6 +86,24 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminActualitesRoute =
+  AuthenticatedAdminActualitesRouteImport.update({
+    id: '/actualites',
+    path: '/actualites',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminContenusRoute =
+  AuthenticatedAdminContenusRouteImport.update({
+    id: '/contenus',
+    path: '/contenus',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminMessagesRoute =
+  AuthenticatedAdminMessagesRouteImport.update({
+    id: '/messages',
+    path: '/messages',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminParametresRoute =
   AuthenticatedAdminParametresRouteImport.update({
     id: '/parametres',
@@ -110,6 +131,9 @@ export interface FileRoutesByFullPath {
   '/partenaires': typeof SitePartenairesRoute
   '/realisations': typeof SiteRealisationsRoute
   '/services': typeof SiteServicesRoute
+  '/admin/actualites': typeof AuthenticatedAdminActualitesRoute
+  '/admin/contenus': typeof AuthenticatedAdminContenusRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/actualites/$slug': typeof SiteActualitesSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -124,6 +148,9 @@ export interface FileRoutesByTo {
   '/partenaires': typeof SitePartenairesRoute
   '/realisations': typeof SiteRealisationsRoute
   '/services': typeof SiteServicesRoute
+  '/admin/actualites': typeof AuthenticatedAdminActualitesRoute
+  '/admin/contenus': typeof AuthenticatedAdminContenusRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/actualites/$slug': typeof SiteActualitesSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -142,6 +169,9 @@ export interface FileRoutesById {
   '/_site/realisations': typeof SiteRealisationsRoute
   '/_site/services': typeof SiteServicesRoute
   '/_site/': typeof SiteIndexRoute
+  '/_authenticated/admin/actualites': typeof AuthenticatedAdminActualitesRoute
+  '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
+  '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/_site/actualites/$slug': typeof SiteActualitesSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -159,6 +189,9 @@ export interface FileRouteTypes {
     | '/partenaires'
     | '/realisations'
     | '/services'
+    | '/admin/actualites'
+    | '/admin/contenus'
+    | '/admin/messages'
     | '/admin/parametres'
     | '/actualites/$slug'
     | '/admin/'
@@ -173,6 +206,9 @@ export interface FileRouteTypes {
     | '/partenaires'
     | '/realisations'
     | '/services'
+    | '/admin/actualites'
+    | '/admin/contenus'
+    | '/admin/messages'
     | '/admin/parametres'
     | '/actualites/$slug'
     | '/admin'
@@ -190,6 +226,9 @@ export interface FileRouteTypes {
     | '/_site/realisations'
     | '/_site/services'
     | '/_site/'
+    | '/_authenticated/admin/actualites'
+    | '/_authenticated/admin/contenus'
+    | '/_authenticated/admin/messages'
     | '/_authenticated/admin/parametres'
     | '/_site/actualites/$slug'
     | '/_authenticated/admin/'
@@ -288,6 +327,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/actualites': {
+      id: '/_authenticated/admin/actualites'
+      path: '/actualites'
+      fullPath: '/admin/actualites'
+      preLoaderRoute: typeof AuthenticatedAdminActualitesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/contenus': {
+      id: '/_authenticated/admin/contenus'
+      path: '/contenus'
+      fullPath: '/admin/contenus'
+      preLoaderRoute: typeof AuthenticatedAdminContenusRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/messages': {
+      id: '/_authenticated/admin/messages'
+      path: '/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AuthenticatedAdminMessagesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/parametres': {
       id: '/_authenticated/admin/parametres'
       path: '/parametres'
@@ -313,11 +373,17 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminActualitesRoute: typeof AuthenticatedAdminActualitesRoute
+  AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
+  AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminParametresRoute: typeof AuthenticatedAdminParametresRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminActualitesRoute: AuthenticatedAdminActualitesRoute,
+  AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
+  AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminParametresRoute: AuthenticatedAdminParametresRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
