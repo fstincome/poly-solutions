@@ -12,10 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SiteRouteRouteImport } from './routes/_site/route'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
 import { Route as SiteAProposRouteImport } from './routes/_site/a-propos'
+import { Route as SiteContactRouteImport } from './routes/_site/contact'
 import { Route as SiteEquipeRouteImport } from './routes/_site/equipe'
 import { Route as SitePartenairesRouteImport } from './routes/_site/partenaires'
 import { Route as SiteRealisationsRouteImport } from './routes/_site/realisations'
 import { Route as SiteServicesRouteImport } from './routes/_site/services'
+import { Route as SiteActualitesIndexRouteImport } from './routes/_site/actualites.index'
+import { Route as SiteActualitesSlugRouteImport } from './routes/_site/actualites.$slug'
 
 const SiteRouteRoute = SiteRouteRouteImport.update({
   id: '/_site',
@@ -29,6 +32,11 @@ const SiteIndexRoute = SiteIndexRouteImport.update({
 const SiteAProposRoute = SiteAProposRouteImport.update({
   id: '/a-propos',
   path: '/a-propos',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteContactRoute = SiteContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => SiteRouteRoute,
 } as any)
 const SiteEquipeRoute = SiteEquipeRouteImport.update({
@@ -51,59 +59,87 @@ const SiteServicesRoute = SiteServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => SiteRouteRoute,
 } as any)
+const SiteActualitesIndexRoute = SiteActualitesIndexRouteImport.update({
+  id: '/actualites/',
+  path: '/actualites/',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteActualitesSlugRoute = SiteActualitesSlugRouteImport.update({
+  id: '/actualites/$slug',
+  path: '/actualites/$slug',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
   '/a-propos': typeof SiteAProposRoute
+  '/contact': typeof SiteContactRoute
   '/equipe': typeof SiteEquipeRoute
   '/partenaires': typeof SitePartenairesRoute
   '/realisations': typeof SiteRealisationsRoute
   '/services': typeof SiteServicesRoute
+  '/actualites/$slug': typeof SiteActualitesSlugRoute
+  '/actualites/': typeof SiteActualitesIndexRoute
 }
 export interface FileRoutesByTo {
   '/a-propos': typeof SiteAProposRoute
+  '/contact': typeof SiteContactRoute
   '/equipe': typeof SiteEquipeRoute
   '/partenaires': typeof SitePartenairesRoute
   '/realisations': typeof SiteRealisationsRoute
   '/services': typeof SiteServicesRoute
   '/': typeof SiteIndexRoute
+  '/actualites/$slug': typeof SiteActualitesSlugRoute
+  '/actualites': typeof SiteActualitesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_site': typeof SiteRouteRouteWithChildren
   '/_site/a-propos': typeof SiteAProposRoute
+  '/_site/contact': typeof SiteContactRoute
   '/_site/equipe': typeof SiteEquipeRoute
   '/_site/partenaires': typeof SitePartenairesRoute
   '/_site/realisations': typeof SiteRealisationsRoute
   '/_site/services': typeof SiteServicesRoute
   '/_site/': typeof SiteIndexRoute
+  '/_site/actualites/$slug': typeof SiteActualitesSlugRoute
+  '/_site/actualites/': typeof SiteActualitesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/a-propos'
+    | '/contact'
     | '/equipe'
     | '/partenaires'
     | '/realisations'
     | '/services'
+    | '/actualites/$slug'
+    | '/actualites/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/a-propos'
+    | '/contact'
     | '/equipe'
     | '/partenaires'
     | '/realisations'
     | '/services'
     | '/'
+    | '/actualites/$slug'
+    | '/actualites'
   id:
     | '__root__'
     | '/_site'
     | '/_site/a-propos'
+    | '/_site/contact'
     | '/_site/equipe'
     | '/_site/partenaires'
     | '/_site/realisations'
     | '/_site/services'
     | '/_site/'
+    | '/_site/actualites/$slug'
+    | '/_site/actualites/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/a-propos'
       fullPath: '/a-propos'
       preLoaderRoute: typeof SiteAProposRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/contact': {
+      id: '/_site/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof SiteContactRouteImport
       parentRoute: typeof SiteRouteRoute
     }
     '/_site/equipe': {
@@ -161,25 +204,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteServicesRouteImport
       parentRoute: typeof SiteRouteRoute
     }
+    '/_site/actualites/': {
+      id: '/_site/actualites/'
+      path: '/actualites'
+      fullPath: '/actualites/'
+      preLoaderRoute: typeof SiteActualitesIndexRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/actualites/$slug': {
+      id: '/_site/actualites/$slug'
+      path: '/actualites/$slug'
+      fullPath: '/actualites/$slug'
+      preLoaderRoute: typeof SiteActualitesSlugRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
   }
 }
 
 interface SiteRouteRouteChildren {
   SiteAProposRoute: typeof SiteAProposRoute
+  SiteContactRoute: typeof SiteContactRoute
   SiteEquipeRoute: typeof SiteEquipeRoute
   SitePartenairesRoute: typeof SitePartenairesRoute
   SiteRealisationsRoute: typeof SiteRealisationsRoute
   SiteServicesRoute: typeof SiteServicesRoute
   SiteIndexRoute: typeof SiteIndexRoute
+  SiteActualitesSlugRoute: typeof SiteActualitesSlugRoute
+  SiteActualitesIndexRoute: typeof SiteActualitesIndexRoute
 }
 
 const SiteRouteRouteChildren: SiteRouteRouteChildren = {
   SiteAProposRoute: SiteAProposRoute,
+  SiteContactRoute: SiteContactRoute,
   SiteEquipeRoute: SiteEquipeRoute,
   SitePartenairesRoute: SitePartenairesRoute,
   SiteRealisationsRoute: SiteRealisationsRoute,
   SiteServicesRoute: SiteServicesRoute,
   SiteIndexRoute: SiteIndexRoute,
+  SiteActualitesSlugRoute: SiteActualitesSlugRoute,
+  SiteActualitesIndexRoute: SiteActualitesIndexRoute,
 }
 
 const SiteRouteRouteWithChildren = SiteRouteRoute._addFileChildren(
