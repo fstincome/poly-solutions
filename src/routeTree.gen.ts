@@ -9,27 +9,186 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SiteRouteRouteImport } from './routes/_site/route'
+import { Route as SiteIndexRouteImport } from './routes/_site/index'
+import { Route as SiteAProposRouteImport } from './routes/_site/a-propos'
+import { Route as SiteEquipeRouteImport } from './routes/_site/equipe'
+import { Route as SitePartenairesRouteImport } from './routes/_site/partenaires'
+import { Route as SiteRealisationsRouteImport } from './routes/_site/realisations'
+import { Route as SiteServicesRouteImport } from './routes/_site/services'
 
-export interface FileRoutesByFullPath {}
-export interface FileRoutesByTo {}
+const SiteRouteRoute = SiteRouteRouteImport.update({
+  id: '/_site',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SiteIndexRoute = SiteIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteAProposRoute = SiteAProposRouteImport.update({
+  id: '/a-propos',
+  path: '/a-propos',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteEquipeRoute = SiteEquipeRouteImport.update({
+  id: '/equipe',
+  path: '/equipe',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SitePartenairesRoute = SitePartenairesRouteImport.update({
+  id: '/partenaires',
+  path: '/partenaires',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteRealisationsRoute = SiteRealisationsRouteImport.update({
+  id: '/realisations',
+  path: '/realisations',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteServicesRoute = SiteServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+
+export interface FileRoutesByFullPath {
+  '/': typeof SiteIndexRoute
+  '/a-propos': typeof SiteAProposRoute
+  '/equipe': typeof SiteEquipeRoute
+  '/partenaires': typeof SitePartenairesRoute
+  '/realisations': typeof SiteRealisationsRoute
+  '/services': typeof SiteServicesRoute
+}
+export interface FileRoutesByTo {
+  '/a-propos': typeof SiteAProposRoute
+  '/equipe': typeof SiteEquipeRoute
+  '/partenaires': typeof SitePartenairesRoute
+  '/realisations': typeof SiteRealisationsRoute
+  '/services': typeof SiteServicesRoute
+  '/': typeof SiteIndexRoute
+}
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_site': typeof SiteRouteRouteWithChildren
+  '/_site/a-propos': typeof SiteAProposRoute
+  '/_site/equipe': typeof SiteEquipeRoute
+  '/_site/partenaires': typeof SitePartenairesRoute
+  '/_site/realisations': typeof SiteRealisationsRoute
+  '/_site/services': typeof SiteServicesRoute
+  '/_site/': typeof SiteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: never
+  fullPaths:
+    | '/'
+    | '/a-propos'
+    | '/equipe'
+    | '/partenaires'
+    | '/realisations'
+    | '/services'
   fileRoutesByTo: FileRoutesByTo
-  to: never
-  id: '__root__'
+  to:
+    | '/a-propos'
+    | '/equipe'
+    | '/partenaires'
+    | '/realisations'
+    | '/services'
+    | '/'
+  id:
+    | '__root__'
+    | '/_site'
+    | '/_site/a-propos'
+    | '/_site/equipe'
+    | '/_site/partenaires'
+    | '/_site/realisations'
+    | '/_site/services'
+    | '/_site/'
   fileRoutesById: FileRoutesById
 }
-export interface RootRouteChildren {}
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {}
+export interface RootRouteChildren {
+  SiteRouteRoute: typeof SiteRouteRouteWithChildren
 }
 
-const rootRouteChildren: RootRouteChildren = {}
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/_site': {
+      id: '/_site'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof SiteRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_site/': {
+      id: '/_site/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof SiteIndexRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/a-propos': {
+      id: '/_site/a-propos'
+      path: '/a-propos'
+      fullPath: '/a-propos'
+      preLoaderRoute: typeof SiteAProposRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/equipe': {
+      id: '/_site/equipe'
+      path: '/equipe'
+      fullPath: '/equipe'
+      preLoaderRoute: typeof SiteEquipeRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/partenaires': {
+      id: '/_site/partenaires'
+      path: '/partenaires'
+      fullPath: '/partenaires'
+      preLoaderRoute: typeof SitePartenairesRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/realisations': {
+      id: '/_site/realisations'
+      path: '/realisations'
+      fullPath: '/realisations'
+      preLoaderRoute: typeof SiteRealisationsRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/services': {
+      id: '/_site/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof SiteServicesRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+  }
+}
+
+interface SiteRouteRouteChildren {
+  SiteAProposRoute: typeof SiteAProposRoute
+  SiteEquipeRoute: typeof SiteEquipeRoute
+  SitePartenairesRoute: typeof SitePartenairesRoute
+  SiteRealisationsRoute: typeof SiteRealisationsRoute
+  SiteServicesRoute: typeof SiteServicesRoute
+  SiteIndexRoute: typeof SiteIndexRoute
+}
+
+const SiteRouteRouteChildren: SiteRouteRouteChildren = {
+  SiteAProposRoute: SiteAProposRoute,
+  SiteEquipeRoute: SiteEquipeRoute,
+  SitePartenairesRoute: SitePartenairesRoute,
+  SiteRealisationsRoute: SiteRealisationsRoute,
+  SiteServicesRoute: SiteServicesRoute,
+  SiteIndexRoute: SiteIndexRoute,
+}
+
+const SiteRouteRouteWithChildren = SiteRouteRoute._addFileChildren(
+  SiteRouteRouteChildren,
+)
+
+const rootRouteChildren: RootRouteChildren = {
+  SiteRouteRoute: SiteRouteRouteWithChildren,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
