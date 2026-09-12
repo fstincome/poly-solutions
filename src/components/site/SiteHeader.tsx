@@ -192,13 +192,16 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                   );
                 }
                 const isOpen = openMobileGroup === item.label;
+                const isActive = item.children.some((c) => pathname.startsWith(c.to));
                 return (
                   <li key={item.label}>
                     <button
                       type="button"
                       aria-expanded={isOpen}
                       onClick={() => setOpenMobileGroup(isOpen ? null : item.label)}
-                      className="flex w-full items-center justify-between py-1.5 text-sm font-semibold text-foreground/80"
+                      className={`flex w-full items-center justify-between py-1.5 text-sm font-semibold ${
+                        isActive ? "text-accent" : "text-foreground/80"
+                      }`}
                     >
                       {item.label}
                       {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
