@@ -8,12 +8,14 @@ import { ICON_NAMES } from "@/lib/icon-map";
 import { usePermissions } from "@/hooks/use-app-role";
 import type { Resource } from "@/lib/permissions";
 
-export type FieldType = "text" | "textarea" | "list" | "number" | "boolean" | "icon";
+export type FieldType = "text" | "textarea" | "list" | "number" | "boolean" | "icon" | "select";
 
 export type Field = {
   name: string;
   label: string;
   type: FieldType;
+  options?: { value: string; label: string }[];
+  placeholder?: string;
 };
 
 type Row = Record<string, unknown> & { id: string };
@@ -25,6 +27,8 @@ export function CollectionEditor({
   fields,
   defaults,
   resource = "content",
+  filter,
+  emptyLabel,
 }: {
   table: string;
   title: string;
@@ -32,19 +36,24 @@ export function CollectionEditor({
   fields: Field[];
   defaults: Record<string, unknown>;
   resource?: Resource;
+  filter?: Record<string, string>;
+  emptyLabel?: string;
 }) {
   const qc = useQueryClient();
   const perm = usePermissions(resource);
-  const key = ["admin", table];
+  const key = ["admin", table, filter ?? {}];
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: key,
     queryFn: async () => {
-      const { data, error } = await supabase.from(table as never).select("*").order("sort_order");
+      let q = supabase.from(table as never).select("*");
+      for (const [k, v] of Object.entries(filter ?? {})) q = q.eq(k, v);
+      const { data, error } = await q.order("sort_order");
       if (error) throw error;
       return (data ?? []) as unknown as Row[];
     },
   });
+
 
   const save = useMutation({
     mutationFn: async (row: Row) => {
