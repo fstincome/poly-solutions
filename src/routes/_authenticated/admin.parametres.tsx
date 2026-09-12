@@ -5,6 +5,7 @@ import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { usePermissions } from "@/hooks/use-app-role";
 
 export const Route = createFileRoute("/_authenticated/admin/parametres")({
   component: SettingsPage,
@@ -25,6 +26,7 @@ const SECTION_LABELS: Record<string, string> = {
 
 function SettingsPage() {
   const qc = useQueryClient();
+  const perm = usePermissions("settings");
   const [draft, setDraft] = useState<Record<string, string>>({});
 
   const { data: rows = [], isLoading } = useQuery({
@@ -83,17 +85,19 @@ function SettingsPage() {
             Modifiez les titres, textes et coordonnées affichés sur les pages publiques.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => save.mutate()}
-          disabled={save.isPending}
-          className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground disabled:opacity-60"
-        >
-          <Save className="size-4" /> {save.isPending ? "Enregistrement…" : "Enregistrer"}
-        </button>
+        {perm.canUpdate ? (
+          <button
+            type="button"
+            onClick={() => save.mutate()}
+            disabled={save.isPending}
+            className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground disabled:opacity-60"
+          >
+            <Save className="size-4" /> {save.isPending ? "Enregistrement…" : "Enregistrer"}
+          </button>
+        ) : null}
       </div>
 
-      <div className="mt-8 space-y-10">
+      <fieldset disabled={!perm.canUpdate} className="mt-8 space-y-10">
         {sections.map((section) => (
           <section key={section}>
             <h2 className="font-display text-lg font-semibold">{SECTION_LABELS[section] ?? section}</h2>
@@ -125,7 +129,7 @@ function SettingsPage() {
             </div>
           </section>
         ))}
-      </div>
+      </fieldset>
     </div>
   );
 }

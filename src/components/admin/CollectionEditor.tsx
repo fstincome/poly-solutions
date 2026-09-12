@@ -5,6 +5,8 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { ICON_NAMES } from "@/lib/icon-map";
+import { usePermissions } from "@/hooks/use-app-role";
+import type { Resource } from "@/lib/permissions";
 
 export type FieldType = "text" | "textarea" | "list" | "number" | "boolean" | "icon";
 
@@ -22,14 +24,17 @@ export function CollectionEditor({
   description,
   fields,
   defaults,
+  resource = "content",
 }: {
   table: string;
   title: string;
   description?: string;
   fields: Field[];
   defaults: Record<string, unknown>;
+  resource?: Resource;
 }) {
   const qc = useQueryClient();
+  const perm = usePermissions(resource);
   const key = ["admin", table];
 
   const { data: rows = [], isLoading } = useQuery({
@@ -90,13 +95,15 @@ export function CollectionEditor({
           <h2 className="font-display text-xl font-bold">{title}</h2>
           {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
         </div>
-        <button
-          type="button"
-          onClick={() => create.mutate()}
-          className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground"
-        >
-          <Plus className="size-4" /> Ajouter
-        </button>
+        {perm.canCreate ? (
+          <button
+            type="button"
+            onClick={() => create.mutate()}
+            className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground"
+          >
+            <Plus className="size-4" /> Ajouter
+          </button>
+        ) : null}
       </div>
 
       {isLoading ? (
@@ -112,6 +119,8 @@ export function CollectionEditor({
               fields={fields}
               onSave={(r) => save.mutate(r)}
               onDelete={() => remove.mutate(row.id)}
+              canUpdate={perm.canUpdate}
+              canDelete={perm.canDelete}
             />
           ))}
           {rows.length === 0 ? <p className="text-sm text-muted-foreground">Aucun élément pour l'instant.</p> : null}
@@ -126,11 +135,15 @@ function ItemCard({
   fields,
   onSave,
   onDelete,
+  canUpdate,
+  canDelete,
 }: {
   row: Row;
   fields: Field[];
   onSave: (row: Row) => void;
   onDelete: () => void;
+  canUpdate: boolean;
+  canDelete: boolean;
 }) {
   const [draft, setDraft] = useState<Row>(row);
 
@@ -138,7 +151,7 @@ function ItemCard({
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6">
-      <div className="grid gap-4 md:grid-cols-2">
+      <fieldset disabled={!canUpdate} className="grid gap-4 md:grid-cols-2">
         {fields.map((f) => (
           <label key={f.name} className={`text-sm font-medium ${f.type === "textarea" || f.type === "list" ? "md:col-span-2" : ""}`}>
             {f.label}
@@ -189,25 +202,29 @@ function ItemCard({
             )}
           </label>
         ))}
-      </div>
+      </fieldset>
 
       <div className="mt-5 flex gap-2">
-        <button
-          type="button"
-          onClick={() => onSave(draft)}
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
-        >
-          <Save className="size-4" /> Enregistrer
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            if (confirm("Supprimer définitivement cet élément ?")) onDelete();
-          }}
-          className="inline-flex items-center gap-2 rounded-full border border-destructive/40 px-5 py-2 text-sm font-semibold text-destructive"
-        >
-          <Trash2 className="size-4" /> Supprimer
-        </button>
+        {canUpdate ? (
+          <button
+            type="button"
+            onClick={() => onSave(draft)}
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
+          >
+            <Save className="size-4" /> Enregistrer
+          </button>
+        ) : null}
+        {canDelete ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm("Supprimer définitivement cet élément ?")) onDelete();
+            }}
+            className="inline-flex items-center gap-2 rounded-full border border-destructive/40 px-5 py-2 text-sm font-semibold text-destructive"
+          >
+            <Trash2 className="size-4" /> Supprimer
+          </button>
+        ) : null}
       </div>
     </div>
   );

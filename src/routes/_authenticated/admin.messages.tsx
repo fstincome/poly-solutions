@@ -4,8 +4,7 @@ import { Loader2, Mail, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
-import { useAppRole } from "@/hooks/use-app-role";
-import { canDelete } from "@/lib/roles";
+import { usePermissions } from "@/hooks/use-app-role";
 
 export const Route = createFileRoute("/_authenticated/admin/messages")({
   component: MessagesPage,
@@ -13,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/admin/messages")({
 
 function MessagesPage() {
   const qc = useQueryClient();
-  const { role } = useAppRole();
+  const perm = usePermissions("messages");
   const key = ["admin", "contact_messages"];
 
   const { data: messages = [], isLoading } = useQuery({
@@ -77,14 +76,16 @@ function MessagesPage() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => toggleRead.mutate({ id: m.id, is_read: !m.is_read })}
-                    className="rounded-full border border-border px-4 py-1.5 text-xs font-medium"
-                  >
-                    {m.is_read ? "Marquer non lu" : "Marquer comme lu"}
-                  </button>
-                  {canDelete(role) ? (
+                  {perm.canUpdate ? (
+                    <button
+                      type="button"
+                      onClick={() => toggleRead.mutate({ id: m.id, is_read: !m.is_read })}
+                      className="rounded-full border border-border px-4 py-1.5 text-xs font-medium"
+                    >
+                      {m.is_read ? "Marquer non lu" : "Marquer comme lu"}
+                    </button>
+                  ) : null}
+                  {perm.canDelete ? (
                     <button
                       type="button"
                       onClick={() => {

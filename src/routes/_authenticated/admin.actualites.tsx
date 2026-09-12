@@ -5,6 +5,7 @@ import { Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { usePermissions } from "@/hooks/use-app-role";
 
 export const Route = createFileRoute("/_authenticated/admin/actualites")({
   component: NewsAdminPage,
@@ -33,6 +34,7 @@ function slugify(value: string) {
 
 function NewsAdminPage() {
   const qc = useQueryClient();
+  const perm = usePermissions("news");
   const key = ["admin", "news_posts"];
 
   const { data: posts = [], isLoading } = useQuery({
@@ -105,13 +107,15 @@ function NewsAdminPage() {
             Seuls les articles publiés apparaissent sur le site public.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => create.mutate()}
-          className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground"
-        >
-          <Plus className="size-4" /> Nouvel article
-        </button>
+        {perm.canCreate ? (
+          <button
+            type="button"
+            onClick={() => create.mutate()}
+            className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground"
+          >
+            <Plus className="size-4" /> Nouvel article
+          </button>
+        ) : null}
       </div>
 
       {isLoading ? (
@@ -121,7 +125,15 @@ function NewsAdminPage() {
       ) : (
         <div className="mt-6 space-y-4">
           {posts.map((p) => (
-            <PostCard key={p.id} post={p} onSave={(v) => save.mutate(v)} onDelete={() => remove.mutate(p.id)} />
+            <PostCard
+              key={p.id}
+              post={p}
+              onSave={(v) => save.mutate(v)}
+              onDelete={() => remove.mutate(p.id)}
+              canUpdate={perm.canUpdate}
+              canDelete={perm.canDelete}
+              canPublish={perm.canPublish}
+            />
           ))}
           {posts.length === 0 ? <p className="text-sm text-muted-foreground">Aucun article pour l'instant.</p> : null}
         </div>
@@ -130,13 +142,27 @@ function NewsAdminPage() {
   );
 }
 
-function PostCard({ post, onSave, onDelete }: { post: Post; onSave: (p: Post) => void; onDelete: () => void }) {
+function PostCard({
+  post,
+  onSave,
+  onDelete,
+  canUpdate,
+  canDelete,
+  canPublish,
+}: {
+  post: Post;
+  onSave: (p: Post) => void;
+  onDelete: () => void;
+  canUpdate: boolean;
+  canDelete: boolean;
+  canPublish: boolean;
+}) {
   const [draft, setDraft] = useState<Post>(post);
   const set = (k: keyof Post, v: unknown) => setDraft((d) => ({ ...d, [k]: v }) as Post);
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6">
-      <div className="grid gap-4 md:grid-cols-2">
+      <fieldset disabled={!canUpdate} className="grid gap-4 md:grid-cols-2">
         <label className="text-sm font-medium">
           Titre
           <input
@@ -195,30 +221,35 @@ function PostCard({ post, onSave, onDelete }: { post: Post; onSave: (p: Post) =>
           <input
             type="checkbox"
             checked={draft.is_published}
+            disabled={!canPublish}
             onChange={(e) => set("is_published", e.target.checked)}
             className="size-4"
           />
           Publié sur le site
         </label>
-      </div>
+      </fieldset>
 
       <div className="mt-5 flex gap-2">
-        <button
-          type="button"
-          onClick={() => onSave(draft)}
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
-        >
-          <Save className="size-4" /> Enregistrer
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            if (confirm("Supprimer définitivement cet article ?")) onDelete();
-          }}
-          className="inline-flex items-center gap-2 rounded-full border border-destructive/40 px-5 py-2 text-sm font-semibold text-destructive"
-        >
-          <Trash2 className="size-4" /> Supprimer
-        </button>
+        {canUpdate ? (
+          <button
+            type="button"
+            onClick={() => onSave(draft)}
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
+          >
+            <Save className="size-4" /> Enregistrer
+          </button>
+        ) : null}
+        {canDelete ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm("Supprimer définitivement cet article ?")) onDelete();
+            }}
+            className="inline-flex items-center gap-2 rounded-full border border-destructive/40 px-5 py-2 text-sm font-semibold text-destructive"
+          >
+            <Trash2 className="size-4" /> Supprimer
+          </button>
+        ) : null}
       </div>
     </div>
   );

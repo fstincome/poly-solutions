@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
 import { highestRole, type AppRole } from "@/lib/roles";
+import { can, type Action, type Resource } from "@/lib/permissions";
 
 /** Role of the signed-in account, or null when no role was granted. */
 export function useAppRole() {
@@ -20,9 +21,26 @@ export function useAppRole() {
     },
   });
 
+  const role = query.data ?? null;
+
   return {
     user,
-    role: query.data ?? null,
+    role,
     isLoading: !user || query.isLoading,
+    can: (resource: Resource, action: Action) => can(role, resource, action),
+  };
+}
+
+/** Convenience hook for a single page: `const perm = usePermissions("news")`. */
+export function usePermissions(resource: Resource) {
+  const { role, isLoading, can: check } = useAppRole();
+  return {
+    role,
+    isLoading,
+    canView: check(resource, "view"),
+    canCreate: check(resource, "create"),
+    canUpdate: check(resource, "update"),
+    canDelete: check(resource, "delete"),
+    canPublish: check(resource, "publish"),
   };
 }
