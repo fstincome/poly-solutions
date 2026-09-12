@@ -119,9 +119,9 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenMenu(isOpen ? null : item.label)}
-                    className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-accent ${
+                    className={`relative inline-flex items-center gap-1.5 pb-1 text-sm font-medium transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-accent after:transition-transform hover:text-accent ${
                       isActive || isOpen ? "text-accent" : "text-foreground/75"
-                    }`}
+                    } ${isActive ? "after:scale-x-100" : "after:scale-x-0"}`}
                   >
                     {item.label}
                     {isOpen ? (
