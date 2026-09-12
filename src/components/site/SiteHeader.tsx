@@ -226,7 +226,12 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                 );
               })}
               <li>
-                <Link to="/contact" onClick={() => setOpen(false)} className="block py-1.5 text-sm font-medium text-foreground/80">
+                <Link
+                  to="/contact"
+                  onClick={() => setOpen(false)}
+                  activeProps={{ className: "border-accent bg-secondary font-semibold text-accent", "aria-current": "page" }}
+                  className="block border-l-2 border-transparent py-1.5 pl-3 text-sm font-medium text-foreground/80"
+                >
                   Contact
                 </Link>
               </li>
