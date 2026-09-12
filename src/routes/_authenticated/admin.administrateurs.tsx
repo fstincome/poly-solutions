@@ -7,7 +7,7 @@ import { ShieldAlert, Trash2, UserPlus } from "lucide-react";
 
 import { listTeamAccounts, revokeUserAccess, setUserRole } from "@/lib/admin.functions";
 import { useAppRole } from "@/hooks/use-app-role";
-import { ROLE_DESCRIPTIONS, ROLE_LABELS, ROLE_ORDER, canManageUsers, type AppRole } from "@/lib/roles";
+import { ROLE_DESCRIPTIONS, ROLE_LABELS, ROLE_ORDER, type AppRole } from "@/lib/roles";
 
 export const Route = createFileRoute("/_authenticated/admin/administrateurs")({
   component: UsersPage,
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/admin/administrateurs")({
 
 function UsersPage() {
   const qc = useQueryClient();
-  const { role: myRole, isLoading: roleLoading } = useAppRole();
+  const { role: myRole, isLoading: roleLoading, can } = useAppRole();
   const list = useServerFn(listTeamAccounts);
   const save = useServerFn(setUserRole);
   const revoke = useServerFn(revokeUserAccess);
@@ -24,7 +24,7 @@ function UsersPage() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<AppRole>("editor");
 
-  const allowed = canManageUsers(myRole);
+  const allowed = can("users", "view") && can("users", "update");
 
   const { data: accounts, isLoading } = useQuery({
     queryKey: ["team-accounts"],
