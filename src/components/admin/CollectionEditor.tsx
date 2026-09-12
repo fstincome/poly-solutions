@@ -36,8 +36,8 @@ export function CollectionEditor({
   fields: Field[];
   defaults: Record<string, unknown>;
   resource?: Resource;
-  filter?: Record<string, string>;
-  emptyLabel?: string;
+  filter?: Record<string, string> | undefined;
+  emptyLabel?: string | undefined;
 }) {
   const qc = useQueryClient();
   const perm = usePermissions(resource);
