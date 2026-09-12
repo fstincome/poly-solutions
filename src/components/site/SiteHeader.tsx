@@ -101,8 +101,11 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                     key={item.to}
                     to={item.to!}
                     activeOptions={{ exact: item.to === "/" }}
-                    activeProps={{ className: "text-accent" }}
-                    className="text-sm font-medium text-foreground/75 transition-colors hover:text-accent"
+                    activeProps={{
+                      className: "text-accent after:scale-x-100",
+                      "aria-current": "page",
+                    }}
+                    className="relative pb-1 text-sm font-medium text-foreground/75 transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-accent after:transition-transform hover:text-accent"
                   >
                     {item.label}
                   </Link>
@@ -116,9 +119,9 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenMenu(isOpen ? null : item.label)}
-                    className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-accent ${
+                    className={`relative inline-flex items-center gap-1.5 pb-1 text-sm font-medium transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-accent after:transition-transform hover:text-accent ${
                       isActive || isOpen ? "text-accent" : "text-foreground/75"
-                    }`}
+                    } ${isActive ? "after:scale-x-100" : "after:scale-x-0"}`}
                   >
                     {item.label}
                     {isOpen ? (
@@ -134,7 +137,7 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                           key={c.to}
                           to={c.to}
                           onClick={() => setOpenMenu(null)}
-                          activeProps={{ className: "text-accent" }}
+                          activeProps={{ className: "bg-secondary text-accent", "aria-current": "page" }}
                           className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-accent"
                         >
                           {c.label}
@@ -176,7 +179,12 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                       <Link
                         to={item.to!}
                         onClick={() => setOpen(false)}
-                        className="block py-1.5 text-sm font-medium text-foreground/80"
+                        activeOptions={{ exact: item.to === "/" }}
+                        activeProps={{
+                          className: "border-accent bg-secondary font-semibold text-accent",
+                          "aria-current": "page",
+                        }}
+                        className="block border-l-2 border-transparent py-1.5 pl-3 text-sm font-medium text-foreground/80"
                       >
                         {item.label}
                       </Link>
@@ -184,13 +192,16 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                   );
                 }
                 const isOpen = openMobileGroup === item.label;
+                const isActive = item.children.some((c) => pathname.startsWith(c.to));
                 return (
                   <li key={item.label}>
                     <button
                       type="button"
                       aria-expanded={isOpen}
                       onClick={() => setOpenMobileGroup(isOpen ? null : item.label)}
-                      className="flex w-full items-center justify-between py-1.5 text-sm font-semibold text-foreground/80"
+                      className={`flex w-full items-center justify-between py-1.5 text-sm font-semibold ${
+                        isActive ? "text-accent" : "text-foreground/80"
+                      }`}
                     >
                       {item.label}
                       {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
@@ -202,6 +213,7 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                             <Link
                               to={c.to}
                               onClick={() => setOpen(false)}
+                              activeProps={{ className: "font-semibold text-accent", "aria-current": "page" }}
                               className="block text-sm text-foreground/75"
                             >
                               {c.label}
@@ -214,7 +226,12 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                 );
               })}
               <li>
-                <Link to="/contact" onClick={() => setOpen(false)} className="block py-1.5 text-sm font-medium text-foreground/80">
+                <Link
+                  to="/contact"
+                  onClick={() => setOpen(false)}
+                  activeProps={{ className: "border-accent bg-secondary font-semibold text-accent", "aria-current": "page" }}
+                  className="block border-l-2 border-transparent py-1.5 pl-3 text-sm font-medium text-foreground/80"
+                >
                   Contact
                 </Link>
               </li>
