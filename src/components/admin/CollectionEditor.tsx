@@ -220,6 +220,7 @@ function ItemCard({
               <input
                 type={f.type === "number" ? "number" : "text"}
                 value={String(draft[f.name] ?? "")}
+                placeholder={f.placeholder}
                 onChange={(e) => set(f.name, f.type === "number" ? Number(e.target.value) : e.target.value)}
                 className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-normal"
               />

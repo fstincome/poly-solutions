@@ -15,6 +15,8 @@ type Collection = {
   description: string;
   fields: Field[];
   defaults: Record<string, unknown>;
+  filter?: Record<string, string>;
+  emptyLabel?: string;
 };
 
 const COLLECTIONS: Collection[] = [
