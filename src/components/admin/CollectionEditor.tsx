@@ -73,7 +73,7 @@ export function CollectionEditor({
     mutationFn: async () => {
       const { error } = await supabase
         .from(table as never)
-        .insert({ ...defaults, sort_order: rows.length + 1 } as never);
+        .insert({ ...defaults, ...(filter ?? {}), sort_order: rows.length + 1 } as never);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -132,7 +132,9 @@ export function CollectionEditor({
               canDelete={perm.canDelete}
             />
           ))}
-          {rows.length === 0 ? <p className="text-sm text-muted-foreground">Aucun élément pour l'instant.</p> : null}
+          {rows.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{emptyLabel ?? "Aucun élément pour l'instant."}</p>
+          ) : null}
         </div>
       )}
     </div>
@@ -179,6 +181,18 @@ function ItemCard({
                 placeholder="Un élément par ligne"
                 className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-normal"
               />
+            ) : f.type === "select" ? (
+              <select
+                value={String(draft[f.name] ?? "")}
+                onChange={(e) => set(f.name, e.target.value)}
+                className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-normal"
+              >
+                {(f.options ?? []).map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
             ) : f.type === "icon" ? (
               <select
                 value={String(draft[f.name] ?? "")}
@@ -191,6 +205,7 @@ function ItemCard({
                   </option>
                 ))}
               </select>
+
             ) : f.type === "boolean" ? (
               <span className="mt-2 flex items-center gap-2">
                 <input
