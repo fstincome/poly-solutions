@@ -1,5 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { AppRole } from "@/lib/roles";
+
+const VALID_ROLES: AppRole[] = ["admin", "editor", "user"];
+
+function parseRole(value: unknown): AppRole {
+  const role = String(value) as AppRole;
+  if (!VALID_ROLES.includes(role)) throw new Error("Rôle inconnu.");
+  return role;
+}
 
 /**
  * One-time bootstrap: the first signed-in user can claim the admin role
@@ -40,31 +49,36 @@ async function assertAdmin(supabase: any, userId: string) {
   if (!data) throw new Error("Réservé aux administrateurs.");
 }
 
-export const listAdmins = createServerFn({ method: "GET" })
+export const listTeamAccounts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     const { data: roles, error } = await supabaseAdmin
       .from("user_roles")
-      .select("id, user_id, created_at")
-      .eq("role", "admin");
+      .select("id, user_id, role, created_at");
     if (error) throw new Error(error.message);
+
     const { data: users } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
     const emails = new Map((users?.users ?? []).map((u) => [u.id, u.email ?? ""]));
+
     return (roles ?? []).map((r) => ({
       id: r.id,
       userId: r.user_id,
+      role: r.role as AppRole,
       email: emails.get(r.user_id) ?? "(compte inconnu)",
       createdAt: r.created_at,
     }));
   });
 
-export const addAdmin = createServerFn({ method: "POST" })
+/** Creates the account if needed, then gives it exactly one role. */
+export const setUserRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { email: string; password: string }) => ({
+  .inputValidator((d: { email: string; password?: string; role: string }) => ({
     email: String(d.email).trim().toLowerCase(),
     password: String(d.password ?? ""),
+    role: parseRole(d.role),
   }))
   .handler(async ({ context, data }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -84,25 +98,33 @@ export const addAdmin = createServerFn({ method: "POST" })
       user = created.user!;
     }
 
+    if (user.id === context.userId && data.role !== "admin") {
+      throw new Error("Vous ne pouvez pas réduire vos propres droits.");
+    }
+
+    const { error: clearError } = await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", user.id)
+      .neq("role", data.role);
+    if (clearError) throw new Error(clearError.message);
+
     const { error: roleError } = await supabaseAdmin
       .from("user_roles")
-      .upsert({ user_id: user.id, role: "admin" }, { onConflict: "user_id,role" });
+      .upsert({ user_id: user.id, role: data.role }, { onConflict: "user_id,role" });
     if (roleError) throw new Error(roleError.message);
-    return { ok: true, email: data.email };
+
+    return { ok: true, email: data.email, role: data.role };
   });
 
-export const removeAdmin = createServerFn({ method: "POST" })
+export const revokeUserAccess = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { userId: string }) => ({ userId: String(d.userId) }))
   .handler(async ({ context, data }) => {
     await assertAdmin(context.supabase, context.userId);
     if (data.userId === context.userId) throw new Error("Vous ne pouvez pas retirer vos propres droits.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin
-      .from("user_roles")
-      .delete()
-      .eq("user_id", data.userId)
-      .eq("role", "admin");
+    const { error } = await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
