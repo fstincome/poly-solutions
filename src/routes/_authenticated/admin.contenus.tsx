@@ -157,6 +157,8 @@ function ContentPage() {
           description={current.description}
           fields={current.fields}
           defaults={current.defaults}
+          filter={current.filter}
+          emptyLabel={current.emptyLabel}
         />
       </div>
     </div>
