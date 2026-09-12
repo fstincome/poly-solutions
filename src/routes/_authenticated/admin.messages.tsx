@@ -4,6 +4,8 @@ import { Loader2, Mail, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { useAppRole } from "@/hooks/use-app-role";
+import { canDelete } from "@/lib/roles";
 
 export const Route = createFileRoute("/_authenticated/admin/messages")({
   component: MessagesPage,
@@ -11,6 +13,7 @@ export const Route = createFileRoute("/_authenticated/admin/messages")({
 
 function MessagesPage() {
   const qc = useQueryClient();
+  const { role } = useAppRole();
   const key = ["admin", "contact_messages"];
 
   const { data: messages = [], isLoading } = useQuery({
@@ -81,15 +84,17 @@ function MessagesPage() {
                   >
                     {m.is_read ? "Marquer non lu" : "Marquer comme lu"}
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (confirm("Supprimer ce message ?")) remove.mutate(m.id);
-                    }}
-                    className="rounded-full border border-destructive/40 px-4 py-1.5 text-xs font-medium text-destructive"
-                  >
-                    <Trash2 className="inline size-3.5" />
-                  </button>
+                  {canDelete(role) ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm("Supprimer ce message ?")) remove.mutate(m.id);
+                      }}
+                      className="rounded-full border border-destructive/40 px-4 py-1.5 text-xs font-medium text-destructive"
+                    >
+                      <Trash2 className="inline size-3.5" />
+                    </button>
+                  ) : null}
                 </div>
               </div>
 

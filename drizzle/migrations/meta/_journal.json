@@ -8,6 +8,13 @@
       "when": 1789128946421,
       "tag": "0000_add_contact_details_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789224499738,
+      "tag": "0001_role_based_content_access",
+      "breakpoints": true
     }
   ]
 }
