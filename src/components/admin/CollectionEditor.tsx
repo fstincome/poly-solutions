@@ -8,12 +8,14 @@ import { ICON_NAMES } from "@/lib/icon-map";
 import { usePermissions } from "@/hooks/use-app-role";
 import type { Resource } from "@/lib/permissions";
 
-export type FieldType = "text" | "textarea" | "list" | "number" | "boolean" | "icon";
+export type FieldType = "text" | "textarea" | "list" | "number" | "boolean" | "icon" | "select";
 
 export type Field = {
   name: string;
   label: string;
   type: FieldType;
+  options?: { value: string; label: string }[];
+  placeholder?: string;
 };
 
 type Row = Record<string, unknown> & { id: string };
@@ -25,6 +27,8 @@ export function CollectionEditor({
   fields,
   defaults,
   resource = "content",
+  filter,
+  emptyLabel,
 }: {
   table: string;
   title: string;
@@ -32,19 +36,24 @@ export function CollectionEditor({
   fields: Field[];
   defaults: Record<string, unknown>;
   resource?: Resource;
+  filter?: Record<string, string> | undefined;
+  emptyLabel?: string | undefined;
 }) {
   const qc = useQueryClient();
   const perm = usePermissions(resource);
-  const key = ["admin", table];
+  const key = ["admin", table, filter ?? {}];
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: key,
     queryFn: async () => {
-      const { data, error } = await supabase.from(table as never).select("*").order("sort_order");
+      let q = supabase.from(table as never).select("*");
+      for (const [k, v] of Object.entries(filter ?? {})) q = q.eq(k, v);
+      const { data, error } = await q.order("sort_order");
       if (error) throw error;
       return (data ?? []) as unknown as Row[];
     },
   });
+
 
   const save = useMutation({
     mutationFn: async (row: Row) => {
@@ -64,7 +73,7 @@ export function CollectionEditor({
     mutationFn: async () => {
       const { error } = await supabase
         .from(table as never)
-        .insert({ ...defaults, sort_order: rows.length + 1 } as never);
+        .insert({ ...defaults, ...(filter ?? {}), sort_order: rows.length + 1 } as never);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -123,7 +132,9 @@ export function CollectionEditor({
               canDelete={perm.canDelete}
             />
           ))}
-          {rows.length === 0 ? <p className="text-sm text-muted-foreground">Aucun élément pour l'instant.</p> : null}
+          {rows.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{emptyLabel ?? "Aucun élément pour l'instant."}</p>
+          ) : null}
         </div>
       )}
     </div>
@@ -170,6 +181,18 @@ function ItemCard({
                 placeholder="Un élément par ligne"
                 className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-normal"
               />
+            ) : f.type === "select" ? (
+              <select
+                value={String(draft[f.name] ?? "")}
+                onChange={(e) => set(f.name, e.target.value)}
+                className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-normal"
+              >
+                {(f.options ?? []).map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
             ) : f.type === "icon" ? (
               <select
                 value={String(draft[f.name] ?? "")}
@@ -182,6 +205,7 @@ function ItemCard({
                   </option>
                 ))}
               </select>
+
             ) : f.type === "boolean" ? (
               <span className="mt-2 flex items-center gap-2">
                 <input
@@ -196,6 +220,7 @@ function ItemCard({
               <input
                 type={f.type === "number" ? "number" : "text"}
                 value={String(draft[f.name] ?? "")}
+                placeholder={f.placeholder}
                 onChange={(e) => set(f.name, f.type === "number" ? Number(e.target.value) : e.target.value)}
                 className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-normal"
               />
