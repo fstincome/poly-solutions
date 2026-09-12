@@ -36,7 +36,9 @@ function TeamPage() {
       <PageHero eyebrow="Équipe" title={s["team_title"] ?? "Notre équipe"} intro={s["team_intro"]} />
 
       <section className="mx-auto max-w-7xl px-6 py-20">
+        {direction.length > 0 && (
         <h2 className="font-display text-2xl font-bold">Direction et experts techniques</h2>
+        )}
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {direction.map((m) => (
             <article key={m.id} className="rounded-2xl border border-border bg-card p-6">
