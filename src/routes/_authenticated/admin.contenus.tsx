@@ -91,23 +91,41 @@ const COLLECTIONS: Collection[] = [
     defaults: { name: "Nouveau partenaire", category: "IMF" },
   },
   {
-    id: "team",
-    tab: "Équipe",
+    id: "direction",
+    tab: "Direction et experts",
     table: "team_members",
-    title: "Équipe et pôles d'expertise",
-    description: "Catégorie « direction » pour les personnes, « pole » pour les pôles d'expertise.",
+    title: "Direction et experts techniques",
+    description:
+      "Ajoutez, modifiez ou supprimez les personnes affichées sur la page Équipe, section « Direction et experts techniques ».",
+    filter: { category: "direction" },
+    emptyLabel: "Aucune personne enregistrée. Cliquez sur « Ajouter » pour créer un profil.",
     fields: [
-      { name: "name", label: "Nom", type: "text" },
-      { name: "role", label: "Fonction", type: "text" },
-      { name: "email", label: "E-mail", type: "text" },
-      { name: "category", label: "Catégorie (direction ou pole)", type: "text" },
+      { name: "name", label: "Nom complet", type: "text", placeholder: "Prof Dr Prénom NOM" },
+      { name: "role", label: "Fonction", type: "text", placeholder: "Directeur général" },
+      { name: "email", label: "E-mail", type: "text", placeholder: "prenom.nom@poly-solutions.bi" },
+      { name: "icon", label: "Icône", type: "icon" },
+      { name: "description", label: "Présentation (facultatif)", type: "textarea" },
+      { name: "sort_order", label: "Ordre d'affichage", type: "number" },
+    ],
+    defaults: { name: "Nouveau profil", role: "", email: "", category: "direction", icon: "Building2", description: "" },
+  },
+  {
+    id: "poles",
+    tab: "Pôles d'expertise",
+    table: "team_members",
+    title: "Pôles d'expertise",
+    description: "Blocs d'expertise affichés en bas de la page Équipe.",
+    filter: { category: "pole" },
+    fields: [
+      { name: "name", label: "Nom du pôle", type: "text" },
       { name: "icon", label: "Icône", type: "icon" },
       { name: "description", label: "Description", type: "textarea" },
       { name: "sort_order", label: "Ordre d'affichage", type: "number" },
     ],
-    defaults: { name: "Nouveau membre", role: "", category: "direction", icon: "Building2", description: "" },
+    defaults: { name: "Nouveau pôle", role: "", category: "pole", icon: "Users", description: "" },
   },
 ];
+
 
 function ContentPage() {
   const [active, setActive] = useState(COLLECTIONS[0]!.id);
