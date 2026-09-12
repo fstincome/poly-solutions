@@ -147,17 +147,8 @@ function UsersPage() {
                 <div className="flex items-center gap-2">
                   <select
                     value={a.role}
-                    onChange={(e) =>
-                      saveMutation.mutate(undefined, {
-                        onSettled: () => undefined,
-                      }) ??
-                      save({ data: { email: a.email, role: e.target.value } })
-                        .then(() => {
-                          toast.success("Rôle mis à jour.");
-                          qc.invalidateQueries({ queryKey: ["team-accounts"] });
-                        })
-                        .catch((err: Error) => toast.error(err.message))
-                    }
+                    onChange={(e) => changeRole.mutate({ email: a.email, role: e.target.value })}
+
                     className="rounded-full border border-input bg-background px-4 py-2 text-sm"
                   >
                     {ROLE_ORDER.map((r) => (
