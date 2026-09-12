@@ -18,6 +18,7 @@ const LINKS = [
   { to: "/admin/contenus", label: "Services, équipe, partenaires" },
   { to: "/admin/actualites", label: "Actualités" },
   { to: "/admin/messages", label: "Messages reçus" },
+  { to: "/admin/administrateurs", label: "Administrateurs" },
 ] as const;
 
 function AdminLayout() {

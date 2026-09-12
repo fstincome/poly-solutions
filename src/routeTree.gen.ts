@@ -22,6 +22,7 @@ import { Route as SiteRealisationsRouteImport } from './routes/_site/realisation
 import { Route as SiteServicesRouteImport } from './routes/_site/services'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminActualitesRouteImport } from './routes/_authenticated/admin.actualites'
+import { Route as AuthenticatedAdminAdministrateursRouteImport } from './routes/_authenticated/admin.administrateurs'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
 import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminParametresRouteImport } from './routes/_authenticated/admin.parametres'
@@ -92,6 +93,12 @@ const AuthenticatedAdminActualitesRoute =
     path: '/actualites',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminAdministrateursRoute =
+  AuthenticatedAdminAdministrateursRouteImport.update({
+    id: '/administrateurs',
+    path: '/administrateurs',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminContenusRoute =
   AuthenticatedAdminContenusRouteImport.update({
     id: '/contenus',
@@ -132,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/realisations': typeof SiteRealisationsRoute
   '/services': typeof SiteServicesRoute
   '/admin/actualites': typeof AuthenticatedAdminActualitesRoute
+  '/admin/administrateurs': typeof AuthenticatedAdminAdministrateursRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/parametres': typeof AuthenticatedAdminParametresRoute
@@ -149,6 +157,7 @@ export interface FileRoutesByTo {
   '/realisations': typeof SiteRealisationsRoute
   '/services': typeof SiteServicesRoute
   '/admin/actualites': typeof AuthenticatedAdminActualitesRoute
+  '/admin/administrateurs': typeof AuthenticatedAdminAdministrateursRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/parametres': typeof AuthenticatedAdminParametresRoute
@@ -170,6 +179,7 @@ export interface FileRoutesById {
   '/_site/services': typeof SiteServicesRoute
   '/_site/': typeof SiteIndexRoute
   '/_authenticated/admin/actualites': typeof AuthenticatedAdminActualitesRoute
+  '/_authenticated/admin/administrateurs': typeof AuthenticatedAdminAdministrateursRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/parametres': typeof AuthenticatedAdminParametresRoute
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/realisations'
     | '/services'
     | '/admin/actualites'
+    | '/admin/administrateurs'
     | '/admin/contenus'
     | '/admin/messages'
     | '/admin/parametres'
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/realisations'
     | '/services'
     | '/admin/actualites'
+    | '/admin/administrateurs'
     | '/admin/contenus'
     | '/admin/messages'
     | '/admin/parametres'
@@ -227,6 +239,7 @@ export interface FileRouteTypes {
     | '/_site/services'
     | '/_site/'
     | '/_authenticated/admin/actualites'
+    | '/_authenticated/admin/administrateurs'
     | '/_authenticated/admin/contenus'
     | '/_authenticated/admin/messages'
     | '/_authenticated/admin/parametres'
@@ -334,6 +347,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminActualitesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/administrateurs': {
+      id: '/_authenticated/admin/administrateurs'
+      path: '/administrateurs'
+      fullPath: '/admin/administrateurs'
+      preLoaderRoute: typeof AuthenticatedAdminAdministrateursRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/contenus': {
       id: '/_authenticated/admin/contenus'
       path: '/contenus'
@@ -374,6 +394,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminActualitesRoute: typeof AuthenticatedAdminActualitesRoute
+  AuthenticatedAdminAdministrateursRoute: typeof AuthenticatedAdminAdministrateursRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
   AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminParametresRoute: typeof AuthenticatedAdminParametresRoute
@@ -382,6 +403,8 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminActualitesRoute: AuthenticatedAdminActualitesRoute,
+  AuthenticatedAdminAdministrateursRoute:
+    AuthenticatedAdminAdministrateursRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
   AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminParametresRoute: AuthenticatedAdminParametresRoute,
