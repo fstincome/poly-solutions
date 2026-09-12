@@ -137,7 +137,7 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                           key={c.to}
                           to={c.to}
                           onClick={() => setOpenMenu(null)}
-                          activeProps={{ className: "text-accent" }}
+                          activeProps={{ className: "bg-secondary text-accent", "aria-current": "page" }}
                           className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-accent"
                         >
                           {c.label}
