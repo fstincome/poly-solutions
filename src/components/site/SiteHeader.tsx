@@ -213,6 +213,7 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                             <Link
                               to={c.to}
                               onClick={() => setOpen(false)}
+                              activeProps={{ className: "font-semibold text-accent", "aria-current": "page" }}
                               className="block text-sm text-foreground/75"
                             >
                               {c.label}
