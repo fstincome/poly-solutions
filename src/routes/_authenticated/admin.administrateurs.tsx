@@ -51,6 +51,15 @@ function UsersPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+  const changeRole = useMutation({
+    mutationFn: (v: { email: string; role: string }) => save({ data: v }),
+    onSuccess: () => {
+      toast.success("Rôle mis à jour.");
+      qc.invalidateQueries({ queryKey: ["team-accounts"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
 
   if (roleLoading) return <p className="text-sm text-muted-foreground">Chargement…</p>;
 
