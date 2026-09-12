@@ -179,7 +179,12 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                       <Link
                         to={item.to!}
                         onClick={() => setOpen(false)}
-                        className="block py-1.5 text-sm font-medium text-foreground/80"
+                        activeOptions={{ exact: item.to === "/" }}
+                        activeProps={{
+                          className: "border-accent bg-secondary font-semibold text-accent",
+                          "aria-current": "page",
+                        }}
+                        className="block border-l-2 border-transparent py-1.5 pl-3 text-sm font-medium text-foreground/80"
                       >
                         {item.label}
                       </Link>
