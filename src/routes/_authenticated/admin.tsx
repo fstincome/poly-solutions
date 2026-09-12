@@ -7,27 +7,21 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { claimFirstAdmin } from "@/lib/admin.functions";
 import { useAppRole } from "@/hooks/use-app-role";
-import { ROLE_LABELS, canManageUsers } from "@/lib/roles";
+import { ROLE_LABELS } from "@/lib/roles";
+import { ADMIN_PAGES } from "@/lib/permissions";
 import logo from "@/assets/logo.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminLayout,
 });
 
-const LINKS = [
-  { to: "/admin", label: "Tableau de bord", exact: true, adminOnly: false },
-  { to: "/admin/parametres", label: "Textes du site", adminOnly: false },
-  { to: "/admin/contenus", label: "Services, équipe, partenaires", adminOnly: false },
-  { to: "/admin/actualites", label: "Actualités", adminOnly: false },
-  { to: "/admin/messages", label: "Messages reçus", adminOnly: false },
-  { to: "/admin/administrateurs", label: "Comptes et rôles", adminOnly: true },
-] as const;
+
 
 function AdminLayout() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const claim = useServerFn(claimFirstAdmin);
-  const { user, role, isLoading } = useAppRole();
+  const { user, role, isLoading, can } = useAppRole();
 
   const claimMutation = useMutation({
     mutationFn: () => claim({ data: undefined as never }),
@@ -46,7 +40,14 @@ function AdminLayout() {
   }
 
   const readOnly = role === "user";
-  const links = LINKS.filter((l) => !l.adminOnly || canManageUsers(role));
+  const links = [
+    { to: "/admin", label: "Tableau de bord", exact: true },
+    ...ADMIN_PAGES.filter((page) => can(page.resource, "view")).map((page) => ({
+      to: page.to,
+      label: page.label,
+      exact: false,
+    })),
+  ];
 
   return (
     <div className="min-h-screen bg-secondary font-sans">
@@ -80,7 +81,7 @@ function AdminLayout() {
             <Link
               key={l.to}
               to={l.to}
-              activeOptions={{ exact: "exact" in l ? l.exact : false }}
+              activeOptions={{ exact: l.exact }}
               activeProps={{ className: "bg-primary text-primary-foreground" }}
               className="block rounded-lg px-4 py-2.5 text-sm font-medium text-foreground/80 hover:bg-background"
             >
@@ -99,12 +100,10 @@ function AdminLayout() {
               {readOnly ? (
                 <p className="mb-6 flex items-center gap-2 rounded-xl bg-secondary px-4 py-3 text-sm text-muted-foreground">
                   <Eye className="size-4 shrink-0" />
-                  Votre compte est en consultation seule : vous pouvez tout voir, mais rien modifier.
+                  Votre compte est en consultation seule : les actions de modification sont désactivées.
                 </p>
               ) : null}
-              <fieldset disabled={readOnly} className={readOnly ? "opacity-90" : undefined}>
-                <Outlet />
-              </fieldset>
+              <Outlet />
             </>
           ) : (
             <div className="max-w-lg">
