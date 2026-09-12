@@ -1,20 +1,62 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Menu, X, Phone, Mail, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 import logo from "@/assets/logo.png.asset.json";
 
-const NAV = [
+type NavLink = { to: string; label: string };
+type NavItem = { label: string; to?: string; children?: NavLink[] };
+
+const NAV: NavItem[] = [
   { to: "/", label: "Accueil" },
-  { to: "/a-propos", label: "À propos" },
-  { to: "/services", label: "Services" },
-  { to: "/realisations", label: "Réalisations" },
-  { to: "/partenaires", label: "Partenaires" },
-  { to: "/equipe", label: "Équipe" },
+  {
+    label: "L'entreprise",
+    children: [
+      { to: "/a-propos", label: "À propos" },
+      { to: "/equipe", label: "Équipe" },
+      { to: "/partenaires", label: "Partenaires" },
+    ],
+  },
+  {
+    label: "Expertise",
+    children: [
+      { to: "/services", label: "Services" },
+      { to: "/realisations", label: "Réalisations" },
+    ],
+  },
   { to: "/actualites", label: "Actualités" },
-] as const;
+];
+
+const ALL_LINKS: NavLink[] = NAV.flatMap((n) =>
+  n.children ? n.children : n.to ? [{ to: n.to, label: n.label }] : [],
+);
 
 export function SiteHeader({ settings }: { settings: Record<string, string> }) {
   const [open, setOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [openMobileGroup, setOpenMobileGroup] = useState<string | null>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    setOpen(false);
+    setOpenMenu(null);
+    setOpenMobileGroup(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenMenu(null);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpenMenu(null);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, []);
 
   return (
     <>
@@ -51,19 +93,59 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-6 lg:flex">
-            {NAV.map((n) => (
-              <Link
-                key={n.to}
-                to={n.to}
-                activeOptions={{ exact: n.to === "/" }}
-                activeProps={{ className: "text-accent" }}
-                className="text-sm font-medium text-foreground/75 transition-colors hover:text-accent"
-              >
-                {n.label}
-              </Link>
-            ))}
-          </nav>
+          <div ref={navRef} className="hidden items-center gap-6 lg:flex">
+            {NAV.map((item) => {
+              if (!item.children) {
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to!}
+                    activeOptions={{ exact: item.to === "/" }}
+                    activeProps={{ className: "text-accent" }}
+                    className="text-sm font-medium text-foreground/75 transition-colors hover:text-accent"
+                  >
+                    {item.label}
+                  </Link>
+                );
+              }
+              const isOpen = openMenu === item.label;
+              const isActive = item.children.some((c) => pathname.startsWith(c.to));
+              return (
+                <div key={item.label} className="relative">
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setOpenMenu(isOpen ? null : item.label)}
+                    className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-accent ${
+                      isActive || isOpen ? "text-accent" : "text-foreground/75"
+                    }`}
+                  >
+                    {item.label}
+                    {isOpen ? (
+                      <ChevronUp className="size-4 transition-transform" />
+                    ) : (
+                      <ChevronDown className="size-4 transition-transform" />
+                    )}
+                  </button>
+                  {isOpen && (
+                    <div className="absolute left-0 top-full z-50 mt-3 min-w-52 rounded-xl border border-border bg-background p-2 shadow-lg">
+                      {item.children.map((c) => (
+                        <Link
+                          key={c.to}
+                          to={c.to}
+                          onClick={() => setOpenMenu(null)}
+                          activeProps={{ className: "text-accent" }}
+                          className="block rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-accent"
+                        >
+                          {c.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
           <div className="flex items-center gap-2">
             <Link
@@ -74,7 +156,8 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
             </Link>
             <button
               type="button"
-              aria-label="Ouvrir le menu"
+              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
               className="rounded-md border border-border p-2 lg:hidden"
             >
@@ -85,14 +168,56 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
 
         {open && (
           <nav className="border-t border-border bg-background px-6 py-4 lg:hidden">
-            <ul className="space-y-3">
-              {[...NAV, { to: "/contact", label: "Contact" } as const].map((n) => (
-                <li key={n.to}>
-                  <Link to={n.to} onClick={() => setOpen(false)} className="block text-sm font-medium text-foreground/80">
-                    {n.label}
-                  </Link>
-                </li>
-              ))}
+            <ul className="space-y-2">
+              {NAV.map((item) => {
+                if (!item.children) {
+                  return (
+                    <li key={item.to}>
+                      <Link
+                        to={item.to!}
+                        onClick={() => setOpen(false)}
+                        className="block py-1.5 text-sm font-medium text-foreground/80"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                }
+                const isOpen = openMobileGroup === item.label;
+                return (
+                  <li key={item.label}>
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      onClick={() => setOpenMobileGroup(isOpen ? null : item.label)}
+                      className="flex w-full items-center justify-between py-1.5 text-sm font-semibold text-foreground/80"
+                    >
+                      {item.label}
+                      {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+                    </button>
+                    {isOpen && (
+                      <ul className="mt-1 space-y-2 border-l border-border pl-4">
+                        {item.children.map((c) => (
+                          <li key={c.to}>
+                            <Link
+                              to={c.to}
+                              onClick={() => setOpen(false)}
+                              className="block text-sm text-foreground/75"
+                            >
+                              {c.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+              <li>
+                <Link to="/contact" onClick={() => setOpen(false)} className="block py-1.5 text-sm font-medium text-foreground/80">
+                  Contact
+                </Link>
+              </li>
               <li>
                 <a href={`tel:${settings["phone_link"] ?? ""}`} className="block text-sm font-semibold text-accent">
                   {settings["phone"]}
@@ -105,3 +230,5 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
     </>
   );
 }
+
+export { ALL_LINKS };
