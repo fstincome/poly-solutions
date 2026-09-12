@@ -1,11 +1,13 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, LogOut, ShieldCheck } from "lucide-react";
+import { Eye, Loader2, LogOut, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { claimFirstAdmin } from "@/lib/admin.functions";
+import { useAppRole } from "@/hooks/use-app-role";
+import { ROLE_LABELS, canEditContent, canManageUsers } from "@/lib/roles";
 import logo from "@/assets/logo.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -13,39 +15,25 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 const LINKS = [
-  { to: "/admin", label: "Tableau de bord", exact: true },
-  { to: "/admin/parametres", label: "Textes du site" },
-  { to: "/admin/contenus", label: "Services, équipe, partenaires" },
-  { to: "/admin/actualites", label: "Actualités" },
-  { to: "/admin/messages", label: "Messages reçus" },
-  { to: "/admin/administrateurs", label: "Administrateurs" },
+  { to: "/admin", label: "Tableau de bord", exact: true, adminOnly: false },
+  { to: "/admin/parametres", label: "Textes du site", adminOnly: false },
+  { to: "/admin/contenus", label: "Services, équipe, partenaires", adminOnly: false },
+  { to: "/admin/actualites", label: "Actualités", adminOnly: false },
+  { to: "/admin/messages", label: "Messages reçus", adminOnly: false },
+  { to: "/admin/administrateurs", label: "Comptes et rôles", adminOnly: true },
 ] as const;
 
 function AdminLayout() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const claim = useServerFn(claimFirstAdmin);
-
-  const { data: session } = useQuery({
-    queryKey: ["admin-session"],
-    queryFn: async () => (await supabase.auth.getUser()).data.user,
-  });
-
-  const { data: isAdmin, isLoading } = useQuery({
-    queryKey: ["is-admin", session?.id],
-    enabled: !!session?.id,
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("has_role", { _user_id: session!.id, _role: "admin" });
-      if (error) throw error;
-      return Boolean(data);
-    },
-  });
+  const { user, role, isLoading } = useAppRole();
 
   const claimMutation = useMutation({
     mutationFn: () => claim({ data: undefined as never }),
     onSuccess: () => {
       toast.success("Vous êtes maintenant administrateur du site.");
-      qc.invalidateQueries({ queryKey: ["is-admin"] });
+      qc.invalidateQueries({ queryKey: ["my-role"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -57,6 +45,9 @@ function AdminLayout() {
     navigate({ to: "/auth", replace: true });
   }
 
+  const readOnly = role === "user";
+  const links = LINKS.filter((l) => !l.adminOnly || canManageUsers(role));
+
   return (
     <div className="min-h-screen bg-secondary font-sans">
       <header className="border-b border-border bg-background">
@@ -66,7 +57,12 @@ function AdminLayout() {
             <span className="font-display text-sm font-bold text-primary">Administration du site</span>
           </Link>
           <div className="flex items-center gap-3 text-sm">
-            <span className="hidden text-muted-foreground sm:inline">{session?.email}</span>
+            <span className="hidden text-muted-foreground sm:inline">{user?.email}</span>
+            {role ? (
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary">
+                {ROLE_LABELS[role]}
+              </span>
+            ) : null}
             <button
               type="button"
               onClick={signOut}
@@ -80,7 +76,7 @@ function AdminLayout() {
 
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[240px_1fr]">
         <nav className="space-y-1">
-          {LINKS.map((l) => (
+          {links.map((l) => (
             <Link
               key={l.to}
               to={l.to}
@@ -98,16 +94,26 @@ function AdminLayout() {
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" /> Vérification de vos droits…
             </p>
-          ) : isAdmin ? (
-            <Outlet />
+          ) : role ? (
+            <>
+              {readOnly ? (
+                <p className="mb-6 flex items-center gap-2 rounded-xl bg-secondary px-4 py-3 text-sm text-muted-foreground">
+                  <Eye className="size-4 shrink-0" />
+                  Votre compte est en consultation seule : vous pouvez tout voir, mais rien modifier.
+                </p>
+              ) : null}
+              <fieldset disabled={readOnly} className={readOnly ? "opacity-90" : undefined}>
+                <Outlet />
+              </fieldset>
+            </>
           ) : (
             <div className="max-w-lg">
               <ShieldCheck className="size-9 text-accent" />
-              <h1 className="mt-4 font-display text-xl font-bold">Accès administrateur requis</h1>
+              <h1 className="mt-4 font-display text-xl font-bold">Aucun droit d'accès</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Votre compte n'a pas encore les droits d'administration. Si vous êtes la première personne de
-                POLY-SOLUTIONS à configurer le site, activez vos droits ci-dessous. Sinon, demandez à un administrateur
-                existant de vous ajouter.
+                Votre compte n'a encore aucun rôle. Si vous êtes la première personne de POLY-SOLUTIONS à configurer le
+                site, activez vos droits ci-dessous. Sinon, demandez à un administrateur de vous attribuer un rôle
+                (Administrateur, Gestionnaire ou Lecteur).
               </p>
               <button
                 type="button"
@@ -124,3 +130,6 @@ function AdminLayout() {
     </div>
   );
 }
+
+// Content edition helper kept close to the layout for reuse by child pages.
+export const useCanEdit = () => canEditContent(useAppRole().role);
