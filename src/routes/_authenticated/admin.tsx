@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { claimFirstAdmin } from "@/lib/admin.functions";
 import { useAppRole } from "@/hooks/use-app-role";
-import { ROLE_LABELS, canEditContent, canManageUsers } from "@/lib/roles";
+import { ROLE_LABELS, canManageUsers } from "@/lib/roles";
 import logo from "@/assets/logo.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -130,6 +130,3 @@ function AdminLayout() {
     </div>
   );
 }
-
-// Content edition helper kept close to the layout for reuse by child pages.
-export const useCanEdit = () => canEditContent(useAppRole().role);
