@@ -101,8 +101,11 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
                     key={item.to}
                     to={item.to!}
                     activeOptions={{ exact: item.to === "/" }}
-                    activeProps={{ className: "text-accent" }}
-                    className="text-sm font-medium text-foreground/75 transition-colors hover:text-accent"
+                    activeProps={{
+                      className: "text-accent after:scale-x-100",
+                      "aria-current": "page",
+                    }}
+                    className="relative pb-1 text-sm font-medium text-foreground/75 transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-accent after:transition-transform hover:text-accent"
                   >
                     {item.label}
                   </Link>
