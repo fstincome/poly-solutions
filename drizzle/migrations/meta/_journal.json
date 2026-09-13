@@ -22,6 +22,13 @@
       "when": 1789302184634,
       "tag": "0002_add_partner_logo_url",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789302201883,
+      "tag": "0003_partner_logos_storage_policies",
+      "breakpoints": true
     }
   ]
 }
