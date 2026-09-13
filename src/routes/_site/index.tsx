@@ -26,8 +26,20 @@ export const Route = createFileRoute("/_site/")({
           "Développement de logiciels sur mesure, digitalisation des processus et solutions FinTech au Burundi.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://poly-solutions.lovable.app/" },
+      {
+        property: "og:image",
+        content:
+          "https://poly-solutions.lovable.app/__l5e/assets-v1/780aff23-0f2b-4056-af79-96a3d3abc04d/poly-solutions-logo.png",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:image",
+        content:
+          "https://poly-solutions.lovable.app/__l5e/assets-v1/780aff23-0f2b-4056-af79-96a3d3abc04d/poly-solutions-logo.png",
+      },
     ],
+    links: [{ rel: "canonical", href: "https://poly-solutions.lovable.app/" }],
   }),
   component: HomePage,
 });
