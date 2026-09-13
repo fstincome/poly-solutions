@@ -6,10 +6,10 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-// Vercel sets VERCEL=1 during its builds. There we pin Nitro's "vercel" preset so
-// the build emits Vercel functions instead of the default Cloudflare module output.
-// Everywhere else (Lovable preview + Lovable publish) the default target is kept.
-const isVercel = process.env["VERCEL"] === "1" || process.env["VERCEL"] === "true";
+// The build is fully static: `npm run build` emits dist/client, deployable as a
+// plain folder on Vercel (Output Directory = dist/client) or any static host.
+
+
 
 export default defineConfig({
   tanstackStart: {
