@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Save, Trash2, Loader2 } from "lucide-react";
+import { Plus, Save, Trash2, Loader2, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,7 @@ import { ICON_NAMES } from "@/lib/icon-map";
 import { usePermissions } from "@/hooks/use-app-role";
 import type { Resource } from "@/lib/permissions";
 
-export type FieldType = "text" | "textarea" | "list" | "number" | "boolean" | "icon" | "select";
+export type FieldType = "text" | "textarea" | "list" | "number" | "boolean" | "icon" | "select" | "image";
 
 export type Field = {
   name: string;
@@ -16,7 +16,80 @@ export type Field = {
   type: FieldType;
   options?: { value: string; label: string }[];
   placeholder?: string;
+  bucket?: string;
 };
+
+const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10;
+
+function ImageField({
+  value,
+  bucket,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  bucket: string;
+  onChange: (url: string) => void;
+  disabled: boolean;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  const upload = async (file: File) => {
+    setBusy(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "png";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data, error: signErr } = await supabase.storage.from(bucket).createSignedUrl(path, SIGNED_URL_TTL);
+      if (signErr) throw signErr;
+      onChange(data?.signedUrl ?? "");
+      toast.success("Logo importé — pensez à enregistrer");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="mt-1.5 flex items-center gap-4">
+      <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-background">
+        {value ? (
+          <img src={value} alt="" className="size-full object-contain p-1.5" />
+        ) : (
+          <ImageIcon className="size-6 text-muted-foreground" />
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <input
+          type="file"
+          accept="image/*"
+          disabled={disabled || busy}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) void upload(f);
+          }}
+          className="text-xs font-normal file:mr-3 file:rounded-full file:border-0 file:bg-secondary file:px-4 file:py-2 file:text-xs file:font-semibold"
+        />
+        {busy ? (
+          <span className="flex items-center gap-1.5 text-xs font-normal text-muted-foreground">
+            <Loader2 className="size-3 animate-spin" /> Import en cours…
+          </span>
+        ) : value ? (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange("")}
+            className="self-start text-xs font-normal text-destructive underline"
+          >
+            Retirer le logo
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
 type Row = Record<string, unknown> & { id: string };
 
