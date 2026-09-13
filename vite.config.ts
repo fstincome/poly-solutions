@@ -31,8 +31,9 @@ export default defineConfig({
     ],
     prerender: { enabled: true, autoStaticPathsDiscovery: false },
   },
-  // Nitro auto-detects CI providers (Vercel) and would emit .vercel/output.
-  // Pin the static preset so every environment emits the same dist/client folder.
-  nitro: { preset: "static" },
+  // No server runtime is needed: skip nitro entirely so `npm run build` just
+  // emits the static dist/client folder on every host (Vercel included).
+  // Inside a Lovable build this override is ignored (the platform pins its own preset).
+  nitro: false,
 });
 
