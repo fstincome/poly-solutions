@@ -31,5 +31,8 @@ export default defineConfig({
     ],
     prerender: { enabled: true, autoStaticPathsDiscovery: false },
   },
+  // Nitro auto-detects CI providers (Vercel) and would emit .vercel/output.
+  // Pin the static preset so every environment emits the same dist/client folder.
+  nitro: { preset: "static" },
 });
 
