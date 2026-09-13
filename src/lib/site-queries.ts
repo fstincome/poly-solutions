@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getSiteContent, getNewsList, getNewsPost } from "./content.functions";
+import { getSiteContent, getNewsList, getNewsPost } from "./site-data";
 
 export const siteContentQuery = queryOptions({
   queryKey: ["site-content"],
@@ -16,6 +16,6 @@ export const newsListQuery = queryOptions({
 export const newsPostQuery = (slug: string) =>
   queryOptions({
     queryKey: ["news-post", slug],
-    queryFn: () => getNewsPost({ data: { slug } }),
+    queryFn: () => getNewsPost(slug),
     staleTime: 60_000,
   });

@@ -16,6 +16,21 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    // Public pages are rendered to static HTML at build time so the site can be
+    // deployed as a plain folder of files (no server runtime required).
+    pages: [
+      { path: "/" },
+      { path: "/a-propos" },
+      { path: "/services" },
+      { path: "/realisations" },
+      { path: "/partenaires" },
+      { path: "/equipe" },
+      { path: "/actualites" },
+      { path: "/contact" },
+      { path: "/auth" },
+    ],
+    prerender: { enabled: true, autoStaticPathsDiscovery: false },
   },
   ...(isVercel ? { nitro: { preset: "vercel" } } : {}),
 });
+
