@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { siteContentQuery, newsListQuery } from "@/lib/site-queries";
 import { Icon } from "@/lib/icon-map";
 import heroImg from "@/assets/hero.jpg";
+import acatPreview from "@/assets/acat-preview.png.asset.json";
 
 export const Route = createFileRoute("/_site/")({
   loader: async ({ context }) => {
