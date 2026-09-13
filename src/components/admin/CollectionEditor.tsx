@@ -239,7 +239,14 @@ function ItemCard({
         {fields.map((f) => (
           <label key={f.name} className={`text-sm font-medium ${f.type === "textarea" || f.type === "list" ? "md:col-span-2" : ""}`}>
             {f.label}
-            {f.type === "textarea" ? (
+            {f.type === "image" ? (
+              <ImageField
+                value={String(draft[f.name] ?? "")}
+                bucket={f.bucket ?? "partner-logos"}
+                onChange={(url) => set(f.name, url)}
+                disabled={!canUpdate}
+              />
+            ) : f.type === "textarea" ? (
               <textarea
                 rows={4}
                 value={String(draft[f.name] ?? "")}
