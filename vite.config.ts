@@ -31,6 +31,5 @@ export default defineConfig({
     ],
     prerender: { enabled: true, autoStaticPathsDiscovery: false },
   },
-  ...(isVercel ? { nitro: { preset: "vercel" } } : {}),
 });
 
