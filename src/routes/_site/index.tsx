@@ -150,7 +150,7 @@ function HomePage() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Produit phare</p>
             <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-              A-CAT — Agri-Crédit Intelligence
+              A-CAT — Outil d’Analyse des Crédits Agricoles
             </h2>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground">
               Système digitalisé de gestion et de suivi des crédits agricoles, conçu pour les institutions de
@@ -177,7 +177,7 @@ function HomePage() {
           <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-xl">
             <img
               src={acatPreview.url}
-              alt="Aperçu de l'interface de connexion de la plateforme A-CAT Agri-Crédit Intelligence"
+              alt="Aperçu de l'interface de connexion de la plateforme A-CAT, Outil d’Analyse des Crédits Agricoles"
               width={1536}
               height={780}
               loading="lazy"
