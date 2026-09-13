@@ -36,15 +36,23 @@ function PartnersPage() {
         {categories.map((cat) => (
           <div key={cat}>
             <h2 className="font-display text-xl font-semibold">{cat}</h2>
-            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {data.partners
                 .filter((p) => p.category === cat)
                 .map((p) => (
                   <div
                     key={p.id}
-                    className="rounded-xl border border-border bg-card px-5 py-6 text-center text-sm font-semibold text-primary"
+                    className="flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-card px-5 py-6 text-center transition-shadow hover:shadow-md"
                   >
-                    {p.name}
+                    {p.logo_url ? (
+                      <img
+                        src={p.logo_url}
+                        alt={`Logo de ${p.name}`}
+                        loading="lazy"
+                        className="h-14 w-full object-contain"
+                      />
+                    ) : null}
+                    <span className="text-sm font-semibold text-primary">{p.name}</span>
                   </div>
                 ))}
             </div>

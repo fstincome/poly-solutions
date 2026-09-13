@@ -82,13 +82,14 @@ const COLLECTIONS: Collection[] = [
     tab: "Partenaires",
     table: "partners",
     title: "Partenaires",
-    description: "Institutions de microfinance et partenaires internationaux.",
+    description: "Institutions de microfinance et partenaires internationaux. Importez le logo de chaque partenaire.",
     fields: [
       { name: "name", label: "Nom", type: "text" },
+      { name: "logo_url", label: "Logo", type: "image", bucket: "partner-logos" },
       { name: "category", label: "Catégorie", type: "text" },
       { name: "sort_order", label: "Ordre d'affichage", type: "number" },
     ],
-    defaults: { name: "Nouveau partenaire", category: "IMF" },
+    defaults: { name: "Nouveau partenaire", category: "IMF", logo_url: null },
   },
   {
     id: "direction",
