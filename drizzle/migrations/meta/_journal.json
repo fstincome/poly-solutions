@@ -15,6 +15,13 @@
       "when": 1789224499738,
       "tag": "0001_role_based_content_access",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789302184634,
+      "tag": "0002_add_partner_logo_url",
+      "breakpoints": true
     }
   ]
 }

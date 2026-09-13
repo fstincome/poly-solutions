@@ -141,6 +141,7 @@ export type Database = {
         Row: {
           category: string
           id: string
+          logo_url: string | null
           name: string
           sort_order: number
           updated_at: string
@@ -148,6 +149,7 @@ export type Database = {
         Insert: {
           category?: string
           id?: string
+          logo_url?: string | null
           name: string
           sort_order?: number
           updated_at?: string
@@ -155,6 +157,7 @@ export type Database = {
         Update: {
           category?: string
           id?: string
+          logo_url?: string | null
           name?: string
           sort_order?: number
           updated_at?: string
