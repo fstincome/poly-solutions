@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { Phone, Mail, MapPin, Clock, CheckCircle2 } from "lucide-react";
 
 import { siteContentQuery } from "@/lib/site-queries";
-import { sendContactMessage } from "@/lib/content.functions";
+import { sendContactMessage } from "@/lib/site-data";
 import { PageHero } from "@/components/site/PageHero";
 
 export const Route = createFileRoute("/_site/contact")({
@@ -32,7 +31,6 @@ const TYPES = ["Demande de démonstration", "Demande de devis", "Prise de rendez
 function ContactPage() {
   const { data } = useSuspenseQuery(siteContentQuery);
   const s = data.settings;
-  const send = useServerFn(sendContactMessage);
 
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,15 +42,13 @@ function ContactPage() {
     setBusy(true);
     setError(null);
     try {
-      await send({
-        data: {
-          name: String(fd.get("name") ?? ""),
-          email: String(fd.get("email") ?? ""),
-          phone: String(fd.get("phone") ?? ""),
-          organization: String(fd.get("organization") ?? ""),
-          request_type: String(fd.get("request_type") ?? TYPES[0]),
-          message: String(fd.get("message") ?? ""),
-        },
+      await sendContactMessage({
+        name: String(fd.get("name") ?? ""),
+        email: String(fd.get("email") ?? ""),
+        phone: String(fd.get("phone") ?? ""),
+        organization: String(fd.get("organization") ?? ""),
+        request_type: String(fd.get("request_type") ?? TYPES[0]),
+        message: String(fd.get("message") ?? ""),
       });
       setSent(true);
     } catch {
