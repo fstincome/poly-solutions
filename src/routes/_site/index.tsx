@@ -2,17 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
-import { siteContentQuery, newsListQuery } from "@/lib/site-queries";
+import { siteContentQuery } from "@/lib/site-queries";
 import { Icon } from "@/lib/icon-map";
 import heroImg from "@/assets/hero.jpg";
 import acatPreview from "@/assets/acat-preview.png.asset.json";
 
 export const Route = createFileRoute("/_site/")({
   loader: async ({ context }) => {
-    await Promise.all([
-      context.queryClient.ensureQueryData(siteContentQuery),
-      context.queryClient.ensureQueryData(newsListQuery),
-    ]);
+    await context.queryClient.ensureQueryData(siteContentQuery);
   },
   head: () => ({
     meta: [
@@ -37,7 +34,7 @@ export const Route = createFileRoute("/_site/")({
 
 function HomePage() {
   const { data } = useSuspenseQuery(siteContentQuery);
-  const { data: news } = useSuspenseQuery(newsListQuery);
+  
   const s = data.settings;
 
   const stats = [1, 2, 3, 4]
