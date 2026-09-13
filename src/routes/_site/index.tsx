@@ -147,32 +147,47 @@ function HomePage() {
         </div>
       </section>
 
-      {news.length > 0 && (
-        <section className="mx-auto max-w-7xl px-6 py-20">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="font-display text-3xl font-bold tracking-tight">Dernières actualités</h2>
-            <Link to="/actualites" className="text-sm font-semibold text-accent hover:underline">
-              Toutes les actualités →
+      <section className="mx-auto max-w-7xl px-6 py-20">
+        <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Produit phare</p>
+            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+              A-CAT — Agri-Crédit Intelligence
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+              Système digitalisé de gestion et de suivi des crédits agricoles, conçu pour les institutions de
+              microfinance du Burundi.
+            </p>
+            <ul className="mt-6 space-y-3 text-sm text-muted-foreground">
+              {[
+                "Gestion centralisée des clients agricoles",
+                "Suivi terrain avec géolocalisation",
+                "Tableau de bord complet et analytique",
+              ].map((pt) => (
+                <li key={pt} className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-accent" /> {pt}
+                </li>
+              ))}
+            </ul>
+            <Link
+              to="/contact"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
+            >
+              Demander une démonstration <ArrowRight className="size-4" />
             </Link>
           </div>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {news.slice(0, 3).map((n) => (
-              <Link
-                key={n.id}
-                to="/actualites/$slug"
-                params={{ slug: n.slug }}
-                className="rounded-2xl border border-border bg-card p-6 transition-shadow hover:shadow-lg"
-              >
-                <p className="text-xs text-muted-foreground">
-                  {new Date(n.published_at).toLocaleDateString("fr-FR", { dateStyle: "long" })}
-                </p>
-                <h3 className="mt-2 font-display text-lg font-semibold">{n.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{n.excerpt}</p>
-              </Link>
-            ))}
+          <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-xl">
+            <img
+              src={acatPreview.url}
+              alt="Aperçu de l'interface de connexion de la plateforme A-CAT Agri-Crédit Intelligence"
+              width={1536}
+              height={780}
+              loading="lazy"
+              className="w-full object-cover"
+            />
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       <section className="border-t border-border bg-primary py-16 text-primary-foreground">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-6">
