@@ -127,36 +127,6 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="bg-secondary py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Réalisations</p>
-          <h2 className="mt-3 max-w-3xl font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            {s["projects_title"]}
-          </h2>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {data.projects.slice(0, 2).map((p) => (
-              <article key={p.id} className="rounded-3xl border border-border bg-card p-8">
-                <span className="inline-block rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
-                  {p.tag}
-                </span>
-                <h3 className="mt-4 font-display text-xl font-semibold">{p.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{p.description}</p>
-                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                  {p.points.map((pt) => (
-                    <li key={pt} className="flex items-start gap-2">
-                      <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-accent" /> {pt}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-          <Link to="/realisations" className="mt-8 inline-block text-sm font-semibold text-accent hover:underline">
-            Toutes nos réalisations →
-          </Link>
-        </div>
-      </section>
-
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
@@ -196,6 +166,36 @@ function HomePage() {
               className="w-full object-cover"
             />
           </div>
+        </div>
+      </section>
+
+      <section className="bg-secondary py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Réalisations</p>
+          <h2 className="mt-3 max-w-3xl font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            {s["projects_title"]}
+          </h2>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {data.projects.slice(0, 2).map((p) => (
+              <article key={p.id} className="rounded-3xl border border-border bg-card p-8">
+                <span className="inline-block rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                  {p.tag}
+                </span>
+                <h3 className="mt-4 font-display text-xl font-semibold">{p.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{p.description}</p>
+                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  {p.points.map((pt) => (
+                    <li key={pt} className="flex items-start gap-2">
+                      <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-accent" /> {pt}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+          <Link to="/realisations" className="mt-8 inline-block text-sm font-semibold text-accent hover:underline">
+            Toutes nos réalisations →
+          </Link>
         </div>
       </section>
 
