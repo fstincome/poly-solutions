@@ -1,39 +1,27 @@
-// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
-// or the app will break with duplicate plugins:
-//   - TanStack devtools (dev-only, first), tanstackStart, viteReact, tailwindcss, tsConfigPaths,
-//     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,
-//     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
-// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
-// The build is fully static: `npm run build` emits dist/client, deployable as a
-// plain folder on Vercel (Output Directory = dist/client) or any static host.
-
-
-
+// Static browser build only. TanStack Start's server plugin is intentionally
+// not loaded here, so Vite never creates a Nitro/SSR environment.
 export default defineConfig({
-  tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
-    server: { entry: "server" },
-    // Public pages are rendered to static HTML at build time so the site can be
-    // deployed as a plain folder of files (no server runtime required).
-    pages: [
-      { path: "/" },
-      { path: "/a-propos" },
-      { path: "/services" },
-      { path: "/realisations" },
-      { path: "/partenaires" },
-      { path: "/equipe" },
-      { path: "/actualites" },
-      { path: "/contact" },
-      { path: "/auth" },
-    ],
-    prerender: { enabled: true, autoStaticPathsDiscovery: false },
+  plugins: [
+    tanstackRouter({
+      target: "react",
+      routeFileIgnorePattern: "_authenticated",
+    }),
+    tsconfigPaths(),
+    tailwindcss(),
+    react(),
+  ],
+  build: {
+    outDir: "dist/client",
+    emptyOutDir: true,
   },
-  // No server runtime is needed: skip nitro entirely so `npm run build` just
-  // emits the static dist/client folder on every host (Vercel included).
-  // Inside a Lovable build this override is ignored (the platform pins its own preset).
-  nitro: false,
+  server: {
+    host: "0.0.0.0",
+    port: 8080,
+  },
 });
-

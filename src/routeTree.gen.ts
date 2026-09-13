@@ -9,10 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as SiteRouteRouteImport } from './routes/_site/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
 import { Route as SiteAProposRouteImport } from './routes/_site/a-propos'
 import { Route as SiteContactRouteImport } from './routes/_site/contact'
@@ -20,19 +18,9 @@ import { Route as SiteEquipeRouteImport } from './routes/_site/equipe'
 import { Route as SitePartenairesRouteImport } from './routes/_site/partenaires'
 import { Route as SiteRealisationsRouteImport } from './routes/_site/realisations'
 import { Route as SiteServicesRouteImport } from './routes/_site/services'
-import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
-import { Route as AuthenticatedAdminActualitesRouteImport } from './routes/_authenticated/admin.actualites'
-import { Route as AuthenticatedAdminAdministrateursRouteImport } from './routes/_authenticated/admin.administrateurs'
-import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
-import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
-import { Route as AuthenticatedAdminParametresRouteImport } from './routes/_authenticated/admin.parametres'
 import { Route as SiteActualitesIndexRouteImport } from './routes/_site/actualites.index'
 import { Route as SiteActualitesSlugRouteImport } from './routes/_site/actualites.$slug'
 
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SiteRouteRoute = SiteRouteRouteImport.update({
   id: '/_site',
   getParentRoute: () => rootRouteImport,
@@ -41,11 +29,6 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const SiteIndexRoute = SiteIndexRouteImport.update({
   id: '/',
@@ -82,41 +65,6 @@ const SiteServicesRoute = SiteServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => SiteRouteRoute,
 } as any)
-const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedAdminRoute,
-} as any)
-const AuthenticatedAdminActualitesRoute =
-  AuthenticatedAdminActualitesRouteImport.update({
-    id: '/actualites',
-    path: '/actualites',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminAdministrateursRoute =
-  AuthenticatedAdminAdministrateursRouteImport.update({
-    id: '/administrateurs',
-    path: '/administrateurs',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminContenusRoute =
-  AuthenticatedAdminContenusRouteImport.update({
-    id: '/contenus',
-    path: '/contenus',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminMessagesRoute =
-  AuthenticatedAdminMessagesRouteImport.update({
-    id: '/messages',
-    path: '/messages',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminParametresRoute =
-  AuthenticatedAdminParametresRouteImport.update({
-    id: '/parametres',
-    path: '/parametres',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
 const SiteActualitesIndexRoute = SiteActualitesIndexRouteImport.update({
   id: '/actualites/',
   path: '/actualites/',
@@ -131,24 +79,16 @@ const SiteActualitesSlugRoute = SiteActualitesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
   '/auth': typeof AuthRoute
-  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/a-propos': typeof SiteAProposRoute
   '/contact': typeof SiteContactRoute
   '/equipe': typeof SiteEquipeRoute
   '/partenaires': typeof SitePartenairesRoute
   '/realisations': typeof SiteRealisationsRoute
   '/services': typeof SiteServicesRoute
-  '/admin/actualites': typeof AuthenticatedAdminActualitesRoute
-  '/admin/administrateurs': typeof AuthenticatedAdminAdministrateursRoute
-  '/admin/contenus': typeof AuthenticatedAdminContenusRoute
-  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
-  '/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/actualites/$slug': typeof SiteActualitesSlugRoute
-  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/actualites/': typeof SiteActualitesIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof SiteIndexRoute
   '/auth': typeof AuthRoute
   '/a-propos': typeof SiteAProposRoute
   '/contact': typeof SiteContactRoute
@@ -156,21 +96,14 @@ export interface FileRoutesByTo {
   '/partenaires': typeof SitePartenairesRoute
   '/realisations': typeof SiteRealisationsRoute
   '/services': typeof SiteServicesRoute
-  '/admin/actualites': typeof AuthenticatedAdminActualitesRoute
-  '/admin/administrateurs': typeof AuthenticatedAdminAdministrateursRoute
-  '/admin/contenus': typeof AuthenticatedAdminContenusRoute
-  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
-  '/admin/parametres': typeof AuthenticatedAdminParametresRoute
+  '/': typeof SiteIndexRoute
   '/actualites/$slug': typeof SiteActualitesSlugRoute
-  '/admin': typeof AuthenticatedAdminIndexRoute
   '/actualites': typeof SiteActualitesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_site': typeof SiteRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_site/a-propos': typeof SiteAProposRoute
   '/_site/contact': typeof SiteContactRoute
   '/_site/equipe': typeof SiteEquipeRoute
@@ -178,13 +111,7 @@ export interface FileRoutesById {
   '/_site/realisations': typeof SiteRealisationsRoute
   '/_site/services': typeof SiteServicesRoute
   '/_site/': typeof SiteIndexRoute
-  '/_authenticated/admin/actualites': typeof AuthenticatedAdminActualitesRoute
-  '/_authenticated/admin/administrateurs': typeof AuthenticatedAdminAdministrateursRoute
-  '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
-  '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
-  '/_authenticated/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/_site/actualites/$slug': typeof SiteActualitesSlugRoute
-  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_site/actualites/': typeof SiteActualitesIndexRoute
 }
 export interface FileRouteTypes {
@@ -192,24 +119,16 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/admin'
     | '/a-propos'
     | '/contact'
     | '/equipe'
     | '/partenaires'
     | '/realisations'
     | '/services'
-    | '/admin/actualites'
-    | '/admin/administrateurs'
-    | '/admin/contenus'
-    | '/admin/messages'
-    | '/admin/parametres'
     | '/actualites/$slug'
-    | '/admin/'
     | '/actualites/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/auth'
     | '/a-propos'
     | '/contact'
@@ -217,20 +136,13 @@ export interface FileRouteTypes {
     | '/partenaires'
     | '/realisations'
     | '/services'
-    | '/admin/actualites'
-    | '/admin/administrateurs'
-    | '/admin/contenus'
-    | '/admin/messages'
-    | '/admin/parametres'
+    | '/'
     | '/actualites/$slug'
-    | '/admin'
     | '/actualites'
   id:
     | '__root__'
-    | '/_authenticated'
     | '/_site'
     | '/auth'
-    | '/_authenticated/admin'
     | '/_site/a-propos'
     | '/_site/contact'
     | '/_site/equipe'
@@ -238,31 +150,17 @@ export interface FileRouteTypes {
     | '/_site/realisations'
     | '/_site/services'
     | '/_site/'
-    | '/_authenticated/admin/actualites'
-    | '/_authenticated/admin/administrateurs'
-    | '/_authenticated/admin/contenus'
-    | '/_authenticated/admin/messages'
-    | '/_authenticated/admin/parametres'
     | '/_site/actualites/$slug'
-    | '/_authenticated/admin/'
     | '/_site/actualites/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   SiteRouteRoute: typeof SiteRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_site': {
       id: '/_site'
       path: ''
@@ -276,13 +174,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_site/': {
       id: '/_site/'
@@ -333,48 +224,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteServicesRouteImport
       parentRoute: typeof SiteRouteRoute
     }
-    '/_authenticated/admin/': {
-      id: '/_authenticated/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/actualites': {
-      id: '/_authenticated/admin/actualites'
-      path: '/actualites'
-      fullPath: '/admin/actualites'
-      preLoaderRoute: typeof AuthenticatedAdminActualitesRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/administrateurs': {
-      id: '/_authenticated/admin/administrateurs'
-      path: '/administrateurs'
-      fullPath: '/admin/administrateurs'
-      preLoaderRoute: typeof AuthenticatedAdminAdministrateursRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/contenus': {
-      id: '/_authenticated/admin/contenus'
-      path: '/contenus'
-      fullPath: '/admin/contenus'
-      preLoaderRoute: typeof AuthenticatedAdminContenusRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/messages': {
-      id: '/_authenticated/admin/messages'
-      path: '/messages'
-      fullPath: '/admin/messages'
-      preLoaderRoute: typeof AuthenticatedAdminMessagesRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/parametres': {
-      id: '/_authenticated/admin/parametres'
-      path: '/parametres'
-      fullPath: '/admin/parametres'
-      preLoaderRoute: typeof AuthenticatedAdminParametresRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
     '/_site/actualites/': {
       id: '/_site/actualites/'
       path: '/actualites'
@@ -391,39 +240,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AuthenticatedAdminRouteChildren {
-  AuthenticatedAdminActualitesRoute: typeof AuthenticatedAdminActualitesRoute
-  AuthenticatedAdminAdministrateursRoute: typeof AuthenticatedAdminAdministrateursRoute
-  AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
-  AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
-  AuthenticatedAdminParametresRoute: typeof AuthenticatedAdminParametresRoute
-  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
-}
-
-const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
-  AuthenticatedAdminActualitesRoute: AuthenticatedAdminActualitesRoute,
-  AuthenticatedAdminAdministrateursRoute:
-    AuthenticatedAdminAdministrateursRoute,
-  AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
-  AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
-  AuthenticatedAdminParametresRoute: AuthenticatedAdminParametresRoute,
-  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
-}
-
-const AuthenticatedAdminRouteWithChildren =
-  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
-
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
-}
-
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
-}
-
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface SiteRouteRouteChildren {
   SiteAProposRoute: typeof SiteAProposRoute
@@ -454,20 +270,9 @@ const SiteRouteRouteWithChildren = SiteRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   SiteRouteRoute: SiteRouteRouteWithChildren,
   AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
