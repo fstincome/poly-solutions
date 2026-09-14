@@ -1,6 +1,5 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { Eye, Loader2, LogOut, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,11 +19,10 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function AdminLayout() {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const claim = useServerFn(claimFirstAdmin);
   const { user, role, isLoading, can } = useAppRole();
 
   const claimMutation = useMutation({
-    mutationFn: () => claim({ data: undefined as never }),
+    mutationFn: () => claimFirstAdmin(),
     onSuccess: () => {
       toast.success("Vous êtes maintenant administrateur du site.");
       qc.invalidateQueries({ queryKey: ["my-role"] });
