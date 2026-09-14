@@ -10,7 +10,6 @@ export default defineConfig({
   plugins: [
     tanstackRouter({
       target: "react",
-      routeFileIgnorePattern: "_authenticated",
     }),
     tsconfigPaths(),
     tailwindcss(),

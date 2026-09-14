@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ShieldAlert, Trash2, UserPlus } from "lucide-react";
 
@@ -16,9 +15,6 @@ export const Route = createFileRoute("/_authenticated/admin/administrateurs")({
 function UsersPage() {
   const qc = useQueryClient();
   const { role: myRole, isLoading: roleLoading, can } = useAppRole();
-  const list = useServerFn(listTeamAccounts);
-  const save = useServerFn(setUserRole);
-  const revoke = useServerFn(revokeUserAccess);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,11 +25,11 @@ function UsersPage() {
   const { data: accounts, isLoading } = useQuery({
     queryKey: ["team-accounts"],
     enabled: allowed,
-    queryFn: () => list({ data: undefined as never }),
+    queryFn: () => listTeamAccounts(),
   });
 
   const saveMutation = useMutation({
-    mutationFn: () => save({ data: { email, password, role } }),
+    mutationFn: () => setUserRole({ email, password, role }),
     onSuccess: (r) => {
       toast.success(`${r.email} est maintenant ${ROLE_LABELS[r.role as AppRole].toLowerCase()}.`);
       setEmail("");
@@ -44,7 +40,7 @@ function UsersPage() {
   });
 
   const revokeMutation = useMutation({
-    mutationFn: (userId: string) => revoke({ data: { userId } }),
+    mutationFn: (userId: string) => revokeUserAccess({ userId }),
     onSuccess: () => {
       toast.success("Accès retiré.");
       qc.invalidateQueries({ queryKey: ["team-accounts"] });
@@ -52,7 +48,7 @@ function UsersPage() {
     onError: (e: Error) => toast.error(e.message),
   });
   const changeRole = useMutation({
-    mutationFn: (v: { email: string; role: string }) => save({ data: v }),
+    mutationFn: (v: { email: string; role: string }) => setUserRole(v),
     onSuccess: () => {
       toast.success("Rôle mis à jour.");
       qc.invalidateQueries({ queryKey: ["team-accounts"] });
