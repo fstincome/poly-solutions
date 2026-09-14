@@ -179,7 +179,7 @@ function SettingsPage() {
                 .map((r) => (
                   <label
                     key={r.key}
-                    className={`text-sm font-medium ${r.kind === "textarea" ? "md:col-span-2" : ""}`}
+                    className={`text-sm font-medium ${r.kind === "textarea" || r.kind === "image" ? "md:col-span-2" : ""}`}
                   >
                     {r.label}
                     {r.kind === "image" ? (
