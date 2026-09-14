@@ -56,7 +56,7 @@ function StatCard({
   Icon: typeof Mail;
   label: string;
   value: number | string;
-  hint?: string;
+  hint?: string | undefined;
   to: string;
 }) {
   return (
