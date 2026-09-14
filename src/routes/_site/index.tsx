@@ -57,7 +57,7 @@ function HomePage() {
     <>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <img
-          src={heroImg}
+          src={s["hero_image"] || heroImg}
           alt="Ingénieurs de POLY-SOLUTIONS au travail à Bujumbura"
           width={1600}
           height={1008}
