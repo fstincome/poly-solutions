@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,78 @@ import { usePermissions } from "@/hooks/use-app-role";
 export const Route = createFileRoute("/_authenticated/admin/parametres")({
   component: SettingsPage,
 });
+
+const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10;
+
+function SettingImageField({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  onChange: (url: string) => void;
+  disabled: boolean;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  const upload = async (file: File) => {
+    setBusy(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data, error: signErr } = await supabase.storage
+        .from("site-images")
+        .createSignedUrl(path, SIGNED_URL_TTL);
+      if (signErr) throw signErr;
+      onChange(data?.signedUrl ?? "");
+      toast.success("Image importée — pensez à enregistrer");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="mt-1.5 flex items-center gap-4">
+      <div className="flex h-24 w-40 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-background">
+        {value ? (
+          <img src={value} alt="" className="size-full object-cover" />
+        ) : (
+          <ImageIcon className="size-6 text-muted-foreground" />
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <input
+          type="file"
+          accept="image/*"
+          disabled={disabled || busy}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) void upload(f);
+          }}
+          className="text-xs font-normal file:mr-3 file:rounded-full file:border-0 file:bg-secondary file:px-4 file:py-2 file:text-xs file:font-semibold"
+        />
+        {busy ? (
+          <span className="flex items-center gap-1.5 text-xs font-normal text-muted-foreground">
+            <Loader2 className="size-3 animate-spin" /> Import en cours…
+          </span>
+        ) : value ? (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange("")}
+            className="self-start text-xs font-normal text-destructive underline"
+          >
+            Retirer l'image
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
 const SECTION_LABELS: Record<string, string> = {
   identite: "Identité de la société",
@@ -107,10 +179,16 @@ function SettingsPage() {
                 .map((r) => (
                   <label
                     key={r.key}
-                    className={`text-sm font-medium ${r.kind === "textarea" ? "md:col-span-2" : ""}`}
+                    className={`text-sm font-medium ${r.kind === "textarea" || r.kind === "image" ? "md:col-span-2" : ""}`}
                   >
                     {r.label}
-                    {r.kind === "textarea" ? (
+                    {r.kind === "image" ? (
+                      <SettingImageField
+                        value={draft[r.key] ?? ""}
+                        disabled={!perm.canUpdate}
+                        onChange={(url) => setDraft((d) => ({ ...d, [r.key]: url }))}
+                      />
+                    ) : r.kind === "textarea" ? (
                       <textarea
                         rows={4}
                         value={draft[r.key] ?? ""}
