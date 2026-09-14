@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X, Phone, Mail, MapPin, ChevronDown, ChevronUp } from "lucide-react";
-import logo from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo.png";
 
 type NavLink = { to: string; label: string };
 type NavItem = { label: string; to?: string; children?: NavLink[] };
@@ -82,7 +82,7 @@ export function SiteHeader({ settings }: { settings: Record<string, string> }) {
       <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
           <Link to="/" className="flex items-center gap-3">
-            <img src={logo.url} alt="Sceau officiel POLY-SOLUTIONS SPRL" width={48} height={48} className="size-11" />
+            <img src={logo} alt="Sceau officiel POLY-SOLUTIONS SPRL" width={48} height={48} className="size-11" />
             <span className="leading-tight">
               <span className="block font-display text-lg font-bold tracking-tight text-primary">
                 {settings["company_name"] ?? "POLY-SOLUTIONS"}

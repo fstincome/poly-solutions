@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import logo from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo.png";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -77,7 +77,7 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary px-6 py-16 font-sans">
       <div className="w-full max-w-md rounded-3xl border border-border bg-card p-8">
         <Link to="/" className="flex items-center gap-3">
-          <img src={logo.url} alt="POLY-SOLUTIONS SPRL" width={40} height={40} className="size-10" />
+          <img src={logo} alt="POLY-SOLUTIONS SPRL" width={40} height={40} className="size-10" />
           <span className="font-display text-base font-bold text-primary">POLY-SOLUTIONS</span>
         </Link>
 

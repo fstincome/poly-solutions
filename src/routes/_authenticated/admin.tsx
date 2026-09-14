@@ -9,7 +9,7 @@ import { claimFirstAdmin } from "@/lib/admin.functions";
 import { useAppRole } from "@/hooks/use-app-role";
 import { ROLE_LABELS } from "@/lib/roles";
 import { ADMIN_PAGES } from "@/lib/permissions";
-import logo from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo.png";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminLayout,
@@ -54,7 +54,7 @@ function AdminLayout() {
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
           <Link to="/" className="flex items-center gap-3">
-            <img src={logo.url} alt="POLY-SOLUTIONS" width={36} height={36} className="size-9" />
+            <img src={logo} alt="POLY-SOLUTIONS" width={36} height={36} className="size-9" />
             <span className="font-display text-sm font-bold text-primary">Administration du site</span>
           </Link>
           <div className="flex items-center gap-3 text-sm">

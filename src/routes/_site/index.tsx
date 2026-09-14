@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { siteContentQuery } from "@/lib/site-queries";
 import { Icon } from "@/lib/icon-map";
 import heroImg from "@/assets/hero.jpg";
-import acatPreview from "@/assets/acat-preview.png.asset.json";
+import acatPreview from "@/assets/acat-preview.png";
 
 export const Route = createFileRoute("/_site/")({
   loader: async ({ context }) => {
@@ -158,7 +158,7 @@ function HomePage() {
           </div>
           <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-xl">
             <img
-              src={acatPreview.url}
+              src={acatPreview}
               alt="Aperçu de l'interface de connexion de la plateforme A-CAT, Outil d’Analyse des Crédits Agricoles"
               width={1536}
               height={780}
